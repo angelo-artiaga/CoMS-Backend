@@ -33,3 +33,29 @@ or in yarn
 ```
 yarn global add knex
 ```
+
+## ORM
+
+To initialize
+
+```
+knex init
+```
+
+To create a migration file
+
+```
+knex migrate:make <table_name>
+```
+
+To apply migration
+
+```
+knex migrate:latest
+```
+
+To rollback
+
+```
+knex migrate:rollback
+```
