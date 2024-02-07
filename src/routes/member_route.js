@@ -8,9 +8,9 @@ import {
 import isAuthenticated from "../utils/isAuth.js";
 const router = express.Router();
 
-router.get("/member/list", isAuthenticated, viewAllMembers);
-router.get("/member/:id", isAuthenticated, viewMember);
-router.post("/add-member", isAuthenticated, addMember);
-router.delete("/remove/member", isAuthenticated, removeMember);
+router.get("/:org_id/member/list", isAuthenticated, viewAllMembers);
+router.get("/:org_id/member/:id", isAuthenticated, viewMember);
+router.post("/:org_id/add-member", isAuthenticated, addMember);
+router.delete("/:org_id/remove/member/:id", isAuthenticated, removeMember);
 
 export default router;

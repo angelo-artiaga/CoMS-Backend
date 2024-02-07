@@ -6,8 +6,16 @@ const viewOrg = (req, res) => {};
 
 const createOrg = (req, res) => {};
 
-const editOrg = (req, res) => {};
+const editOrg = (req, res) => {
+  /**
+   * req.params.org_id = organization ID
+   */
+};
 
-const removeOrg = (req, res) => {};
+const removeOrg = (req, res) => {
+  /**
+   * req.params.org_id = organization ID
+   */
+};
 
 export { viewAllOrg, viewOrg, createOrg, editOrg, removeOrg };

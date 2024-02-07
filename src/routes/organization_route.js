@@ -12,7 +12,7 @@ const router = express.Router();
 router.get("/org/list", isAuthenticated, viewAllOrg);
 router.get("/org/:id", isAuthenticated, viewOrg);
 router.post("/create/org", isAuthenticated, createOrg);
-router.patch("/edit/org", isAuthenticated, editOrg);
-router.delete("/remove/org", isAuthenticated, removeOrg);
+router.patch("/edit/org/:org_id", isAuthenticated, editOrg);
+router.delete("/remove/org/:org_id", isAuthenticated, removeOrg);
 
 export default router;
