@@ -1,5 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
+import db from "../database/db.js";
 
 passport.use(
   new GoogleStrategy(
@@ -13,7 +14,6 @@ passport.use(
       //   User.findOrCreate({ googleId: profile.id }, function (err, user) {
       //     return done(err, user);
       //   });
-      console.log(profile);
       return done(null, profile);
     }
   )
