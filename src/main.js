@@ -6,6 +6,8 @@ import authenticate_route from "./routes/authenticate_route.js";
 import user_route from "./routes/user_route.js";
 import companyRoute from "./routes/companyRoutes.js";
 import db from "./database/db.js";
+import cors from "cors";
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +18,7 @@ app.use(
     saveUninitialized: false,
   })
 );
+app.use(cors());
 app.use(express.json());
 app.use(authenticate_route);
 app.use(organization_route);

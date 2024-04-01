@@ -1,13 +1,14 @@
 import db from "../database/db.js";
 import { sanitizeObject } from "../utils/sanitize.js";
 import cloudinary from "../utils/cloudinary.js";
+import fs, { stat } from "fs";
 
 const uploadImage = async (imagePath, company_name) => {
   // Upload image to Cloudinary
   try {
     console.log("Image Path: ", imagePath);
     const result = await cloudinary.uploader.upload(imagePath, {
-      folder: "Tsekpay/Companies/Logos",
+      folder: "CoMS/Companies/Logos",
       public_id: company_name,
       overwrite: true,
     });
@@ -21,31 +22,35 @@ const uploadImage = async (imagePath, company_name) => {
 
 const getAllCompany = async (req, res) => {
   try {
-
     const data = await db("companies").select("*");
-
-    res.send(data);
+    res.status(200).json(data);
   } catch (e) {
     res.json({ response: "ERROR!" });
   }
 };
 const createCompany = async (req, res) => {
-  const { companyId, companyName, logo, secNumber } = req.body;
+  const { companyName, secNumber } = req.body;
 
   try {
-    const data = await db("companies").insert({
-      companyId: companyId,
-      companyName: companyName,
-      logo: logo,
-      secNumber: secNumber,
-    });
+    if (req.file) {
+      const result = await uploadImage(req.file.path, companyName);
+      if (result != null) {
+        let toInsert = {
+          companyName: companyName,
+          logo: result.secure_url,
+          secNumber: secNumber,
+          status: true,
+        };
 
-    if (data) {
-      res.sendStatus(200);
+        const data = await db("companies").insert(toInsert);
+
+        if (data) {
+          res.status(200).send(toInsert);
+        }
+      }
     }
   } catch (e) {
     res.json({ response: "ERROR!" });
-
   }
 };
 
@@ -80,6 +85,25 @@ const updateCompany = async (req, res) => {
     res.json({ response: "ERROR!" });
   }
 };
+
+const changeStatus = async (req, res) => {
+  // const companyId = req.params.companyId;
+  const { companyId, status } = req.body;
+  
+  try {
+    const data = await db("companies").where("companyId", companyId).update({
+      status: status,
+    });
+
+    if (data) {
+      res.status(200).json(data);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ response: "ERROR!" });
+  }
+};
+
 const deleteCompany = async (req, res) => {
   const companyId = req.params.companyId;
 
@@ -102,4 +126,5 @@ export {
   getCompany,
   updateCompany,
   deleteCompany,
+  changeStatus,
 };
