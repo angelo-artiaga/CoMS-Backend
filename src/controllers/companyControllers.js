@@ -67,21 +67,48 @@ const getCompany = async (req, res) => {
 };
 
 const updateCompany = async (req, res) => {
-  const companyId = req.params.companyId;
-  const { companyName, logo, secNumber } = req.body;
+  const companyId = req.params.id;
+  const { companyName, secNumber } = req.body;
 
   try {
-    const data = await db("companies").where("companyId", companyId).update({
-      companyId: companyId,
-      companyName: companyName,
-      logo: logo,
-      secNumber: secNumber,
-    });
-    console.log(data);
-    if (data) {
-      res.sendStatus(200);
-    }
+    if (req.file) {
+      const result = await uploadImage(req.file.path, companyName);
+      if (result != null) {
+        let toUpdate = {
+          companyId: companyId,
+          companyName: companyName,
+          logo: result.secure_url,
+          secNumber: secNumber,
+          status: true,
+        };
+
+        const data = await db("companies")
+          .where("companyId", companyId)
+          .update(toUpdate);
+
+        console.log(data);
+        if (data) {
+          res.status(200).send(toUpdate);
+        }
+      }
+    } 
+    // else {
+    //   let toUpdate = {
+    //     companyId: companyId,
+    //     companyName: companyName,
+    //     secNumber: secNumber,
+    //   };
+    //   const data = await db("companies")
+    //     .where("companyId", companyId)
+    //     .update(toUpdate);
+
+    //   if (data) {
+        
+    //     res.status(200).send(toUpdate);
+    //   }
+    // }
   } catch (e) {
+    console.log(e);
     res.json({ response: "ERROR!" });
   }
 };
@@ -89,7 +116,7 @@ const updateCompany = async (req, res) => {
 const changeStatus = async (req, res) => {
   // const companyId = req.params.companyId;
   const { companyId, status } = req.body;
-  
+
   try {
     const data = await db("companies").where("companyId", companyId).update({
       status: status,
