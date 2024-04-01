@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
   return knex.schema
-    .createTable("company", function (table) {
+    .createTable("companies", function (table) {
       table.uuid("companyId").defaultTo(knex.fn.uuid()).primary();
       table.string("companyName").notNullable();
       table.string("logo").nullable();
@@ -21,4 +21,6 @@ exports.up = function (knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function (knex) {};
+exports.down = function (knex) {
+  return knex.schema.dropTable("companies");
+};
