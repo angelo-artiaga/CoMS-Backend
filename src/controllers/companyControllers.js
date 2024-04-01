@@ -20,26 +20,44 @@ const uploadImage = async (imagePath, company_name) => {
 };
 
 const getAllCompany = async (req, res) => {
-  const { rows } = await db.query("SELECT * FROM company");
-  if (rows) {
-    res.sendStatus(200);
-  } else {
+  try {
+    // const { rows } = await db.query("SELECT * FROM company");
+    // const { rows } = await db("company").select("*");
+    // console.log(rows);
+
+    const data = await db("company").select("*");
+
+    res.status(200).json(data);
+
+    return;
+    if (rows) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(500);
+    }
+  } catch (error) {
+    console.log(error);
     res.sendStatus(500);
   }
 };
 const createCompany = async (req, res) => {
   const { companyName, logo, secNumber } = req.body;
-  const result = db.query(
-    "INSERT INTO company (companyName, logo, secNumber) Values($1, $2, $3)",
-    [companyName, logo, secNumber]
-  );
-  result
-    .then((response) => {
-      res.sendStatus(200);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
+  // const result = db.query(
+  //   "INSERT INTO company (companyName, logo, secNumber) Values($1, $2, $3)",
+  //   [companyName, logo, secNumber]
+  // );
+
+  try {
+    const result = await db("company").insert({
+      company_name: companyName,
+      storage_link: logo,
+      address: secNumber,
     });
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 };
 
 const getCompany = async (req, res) => {
