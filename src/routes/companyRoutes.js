@@ -10,6 +10,7 @@ import {
 } from "../controllers/companyControllers.js";
 
 router.route("/company/").post(createCompany).get(getAllCompany);
+
 router
   .route("/company/:id")
   .get(getCompany)

@@ -21,80 +21,79 @@ const uploadImage = async (imagePath, company_name) => {
 
 const getAllCompany = async (req, res) => {
   try {
-    // const { rows } = await db.query("SELECT * FROM company");
-    // const { rows } = await db("company").select("*");
-    // console.log(rows);
 
-    const data = await db("company").select("*");
+    const data = await db("companies").select("*");
 
-    res.status(200).json(data);
-
-    return;
-    if (rows) {
-      res.sendStatus(200);
-    } else {
-      res.sendStatus(500);
-    }
-  } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
+    res.send(data);
+  } catch (e) {
+    res.json({ response: "ERROR!" });
   }
 };
 const createCompany = async (req, res) => {
-  const { companyName, logo, secNumber } = req.body;
-  // const result = db.query(
-  //   "INSERT INTO company (companyName, logo, secNumber) Values($1, $2, $3)",
-  //   [companyName, logo, secNumber]
-  // );
+  const { companyId, companyName, logo, secNumber } = req.body;
 
   try {
-    const result = await db("company").insert({
-      company_name: companyName,
-      storage_link: logo,
-      address: secNumber,
+    const data = await db("companies").insert({
+      companyId: companyId,
+      companyName: companyName,
+      logo: logo,
+      secNumber: secNumber,
     });
-    res.sendStatus(200);
-  } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
+
+    if (data) {
+      res.sendStatus(200);
+    }
+  } catch (e) {
+    res.json({ response: "ERROR!" });
+
   }
 };
 
 const getCompany = async (req, res) => {
-  const { id } = req.params;
-  const { rows } = await db.query("SELECT * FROM company WHERE ID = $1", [id]);
-  if (rows) {
-    res.sendStatus(200);
-  } else {
-    res.sendStatus(500);
+  const companyId = req.params.id;
+  try {
+    const data = await db("companies")
+      .select("*")
+      .where("companyId", companyId);
+    res.send(data);
+  } catch (e) {
+    res.json({ response: "ERROR!" });
   }
 };
 
 const updateCompany = async (req, res) => {
+  const companyId = req.params.companyId;
   const { companyName, logo, secNumber } = req.body;
 
-  const result = db.query(
-    "UPDATE customer SET companyName = $1, logo = $2, secNumber = $3,",
-    [companyName, logo, secNumber]
-  );
-  result
-    .then((response) => {
-      res.sendStatus(200);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
+  try {
+    const data = await db("companies").where("companyId", companyId).update({
+      companyId: companyId,
+      companyName: companyName,
+      logo: logo,
+      secNumber: secNumber,
     });
+    console.log(data);
+    if (data) {
+      res.sendStatus(200);
+    }
+  } catch (e) {
+    res.json({ response: "ERROR!" });
+  }
 };
 const deleteCompany = async (req, res) => {
-  const { id } = req.params;
-  const result = db.query("DELETE FROM customer WHERE id = $1", [id]);
-  result
-    .then((response) => {
-      res.sendStatus(200);
-    })
-    .catch((error) => {
-      res.sendStatus(500);
+  const companyId = req.params.companyId;
+
+  try {
+    const data = await db("companies").where("companyId", companyId).update({
+      status: false,
     });
+    console.log(data);
+    if (data) {
+      res.sendStatus(200);
+    }
+  } catch (e) {
+    res.json({ response: "ERROR!" });
+  }
 };
 
 export {
