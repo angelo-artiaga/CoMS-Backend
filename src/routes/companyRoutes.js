@@ -7,9 +7,10 @@ import {
   updateCompany,
   deleteCompany,
   getCompany,
-} from "../controllers/companyController.js";
+} from "../controllers/companyControllers.js";
 
 router.route("/company/").post(createCompany).get(getAllCompany);
+
 router
   .route("/company/:id")
   .get(getCompany)
