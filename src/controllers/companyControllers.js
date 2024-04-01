@@ -21,6 +21,7 @@ const uploadImage = async (imagePath, company_name) => {
 
 const getAllCompany = async (req, res) => {
   try {
+
     const data = await db("companies").select("*");
 
     res.send(data);
@@ -44,6 +45,7 @@ const createCompany = async (req, res) => {
     }
   } catch (e) {
     res.json({ response: "ERROR!" });
+
   }
 };
 
