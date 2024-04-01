@@ -21,8 +21,7 @@ const uploadImage = async (imagePath, company_name) => {
 
 const getAllCompany = async (req, res) => {
   try {
-
-    const data = await db("companies").select("*");
+    const data = await db("company").select("*");
 
     res.send(data);
   } catch (e) {
@@ -33,7 +32,7 @@ const createCompany = async (req, res) => {
   const { companyId, companyName, logo, secNumber } = req.body;
 
   try {
-    const data = await db("companies").insert({
+    const data = await db("company").insert({
       companyId: companyId,
       companyName: companyName,
       logo: logo,
@@ -44,17 +43,15 @@ const createCompany = async (req, res) => {
       res.sendStatus(200);
     }
   } catch (e) {
-    res.json({ response: "ERROR!" });
-
+    console.log(e);
+    res.json({ response: "ERROR!", e });
   }
 };
 
 const getCompany = async (req, res) => {
   const companyId = req.params.id;
   try {
-    const data = await db("companies")
-      .select("*")
-      .where("companyId", companyId);
+    const data = await db("company").select("*").where("companyId", companyId);
     res.send(data);
   } catch (e) {
     res.json({ response: "ERROR!" });
@@ -62,21 +59,23 @@ const getCompany = async (req, res) => {
 };
 
 const updateCompany = async (req, res) => {
-  const companyId = req.params.companyId;
-  const { companyName, logo, secNumber } = req.body;
+  const companyId = req.params.id;
+
+  const { companyName, logo, secNumber, status } = req.body;
 
   try {
-    const data = await db("companies").where("companyId", companyId).update({
-      companyId: companyId,
+    const data = await db("company").where("companyId", companyId).update({
       companyName: companyName,
       logo: logo,
       secNumber: secNumber,
+      status: status,
     });
-    console.log(data);
+
     if (data) {
       res.sendStatus(200);
     }
   } catch (e) {
+    console.log(e);
     res.json({ response: "ERROR!" });
   }
 };
@@ -84,11 +83,12 @@ const deleteCompany = async (req, res) => {
   const companyId = req.params.companyId;
 
   try {
-    const data = await db("companies").where("companyId", companyId).update({
-      status: false,
-    });
-    console.log(data);
-    if (data) {
+    const data = await db("company")
+      .where("companyId", companyId)
+      .del(["companyId"], { includeTriggerModifications: true });
+    if (data.length < 0) {
+      res.json({ response: "WARNING", detail: "Record doesn't exist" });
+    } else {
       res.sendStatus(200);
     }
   } catch (e) {
