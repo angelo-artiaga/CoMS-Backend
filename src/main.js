@@ -5,9 +5,9 @@ import member_route from "./routes/member_route.js";
 import authenticate_route from "./routes/authenticate_route.js";
 import user_route from "./routes/user_route.js";
 import companyRoute from "./routes/companyRoutes.js";
+import recordRoute from "./routes/recordRoutes.js";
 import db from "./database/db.js";
 import cors from "cors";
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +24,7 @@ app.use(authenticate_route);
 app.use(organization_route);
 app.use(member_route);
 app.use(companyRoute);
+app.use(recordRoute);
 app.use(user_route);
 app.get("/", (req, res) => {
   db("users")
