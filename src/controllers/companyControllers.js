@@ -60,9 +60,13 @@ const getCompany = async (req, res) => {
     const data = await db("companies")
       .select("*")
       .where("companyId", companyId);
-    res.send(data);
+    if (data.length == 1) {
+      res.status(200).json(data);
+    } else {
+      res.status(404).json({ error: `Company ID: ${companyId} is not found.` });
+    }
   } catch (e) {
-    res.json({ response: "ERROR!" });
+    res.status(500).json({ error: "Invalid Company ID" });
   }
 };
 
@@ -86,12 +90,11 @@ const updateCompany = async (req, res) => {
           .where("companyId", companyId)
           .update(toUpdate);
 
-        console.log(data);
         if (data) {
           res.status(200).send(toUpdate);
         }
       }
-    } 
+    }
     // else {
     //   let toUpdate = {
     //     companyId: companyId,
@@ -103,7 +106,7 @@ const updateCompany = async (req, res) => {
     //     .update(toUpdate);
 
     //   if (data) {
-        
+
     //     res.status(200).send(toUpdate);
     //   }
     // }
