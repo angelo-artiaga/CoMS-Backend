@@ -6,6 +6,7 @@ exports.up = function (knex) {
   return knex.schema
     .createTable("records", function (table) {
       table.uuid("recordId").defaultTo(knex.fn.uuid()).primary();
+      table.uuid("companyId").references("companyId").inTable("companies");
       table.string("recordName").nullable();
       table.string("status").nullable();
       table.json("draftingInput").nullable();

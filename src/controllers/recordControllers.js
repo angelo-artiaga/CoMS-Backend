@@ -9,8 +9,19 @@ const getAllRecords = async (req, res) => {
   }
 };
 
+const getAllCompanyRecords = async (req, res) => {
+  const companyId = req.params.companyId;
+  try {
+    const data = await db("records").select("*").where("companyId", companyId);
+    res.status(200).json(data);
+  } catch (e) {
+    res.json({ response: "ERROR!" });
+  }
+};
+
 const createRecord = async (req, res) => {
   const {
+    companyId,
     recordName,
     status,
     draftingInput,
@@ -22,6 +33,7 @@ const createRecord = async (req, res) => {
 
   try {
     let toInsert = {
+      companyId: companyId,
       recordName: recordName,
       status: status,
       draftingInput: JSON.stringify(draftingInput),
@@ -104,4 +116,11 @@ const deleteRecord = async (req, res) => {
   }
 };
 
-export { getAllRecords, getRecord, createRecord, updateRecord, deleteRecord };
+export {
+  getAllRecords,
+  getAllCompanyRecords,
+  getRecord,
+  createRecord,
+  updateRecord,
+  deleteRecord,
+};
