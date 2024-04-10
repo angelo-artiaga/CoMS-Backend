@@ -8,6 +8,8 @@ import companyRoute from "./routes/companyRoutes.js";
 import recordRoute from "./routes/recordRoutes.js";
 import db from "./database/db.js";
 import cors from "cors";
+import "./utils/auth.js";
+import passport from "passport";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,8 +18,11 @@ app.use(
     secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: false,
+    cookie: { secure: false },
   })
 );
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(cors());
 app.use(express.json());
 app.use(authenticate_route);
