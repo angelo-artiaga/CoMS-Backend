@@ -11,9 +11,9 @@ import {
 } from "../controllers/recordControllers.js";
 
 router.route("/record").get(getAllRecords).post(createRecord);
-router.route("/record/:companyId").get(getAllCompanyRecords);
+router.route("/record/company/:companyId").get(getAllCompanyRecords);
 router
-  .route("/record/:id")
+  .route("/record/:recordId")
   .get(getRecord)
   .patch(updateRecord)
   .delete(deleteRecord);
