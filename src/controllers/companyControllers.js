@@ -22,14 +22,14 @@ const uploadImage = async (imagePath, company_name) => {
 
 const getAllCompany = async (req, res) => {
   try {
-    const data = await db("companies").select("*").orderBy('created_at', 'asc');
+    const data = await db("companies").select("*").orderBy("created_at", "asc");
     res.status(200).json(data);
   } catch (e) {
-    res.json({ response: "ERROR!" });
+    res.status(500).json({ response: "ERROR!" });
   }
 };
 const createCompany = async (req, res) => {
-  const { companyName, secNumber } = req.body;
+  const { companyName, secNumber, corporateTin, dateRegistered } = req.body;
 
   try {
     if (req.file) {
@@ -40,6 +40,8 @@ const createCompany = async (req, res) => {
             companyName: companyName,
             logo: result.secure_url,
             secNumber: secNumber,
+            corporateTin: corporateTin,
+            dateRegistered: dateRegistered,
             status: true,
           })
           .returning([
@@ -47,6 +49,8 @@ const createCompany = async (req, res) => {
             "companyName",
             "logo",
             "secNumber",
+            "corporateTin",
+            "dateRegistered",
             "status",
           ]);
 
@@ -55,10 +59,12 @@ const createCompany = async (req, res) => {
         } else {
           res.status(422).send("Failed to insert the record");
         }
+      } else {
+        res.status(400).send("Please upload a valid logo.");
       }
     }
   } catch (e) {
-    res.json({ response: "ERROR!" });
+    res.status(200).json({ response: "ERROR!" });
   }
 };
 
@@ -80,7 +86,7 @@ const getCompany = async (req, res) => {
 
 const updateCompany = async (req, res) => {
   const companyId = req.params.id;
-  const { companyName, secNumber } = req.body;
+  const { companyName, secNumber, corporateTin, dateRegistered } = req.body;
 
   try {
     if (req.file) {
@@ -93,6 +99,8 @@ const updateCompany = async (req, res) => {
             companyName: companyName,
             logo: result.secure_url,
             secNumber: secNumber,
+            corporateTin: corporateTin,
+            dateRegistered: dateRegistered,
             status: true,
           })
           .returning([
@@ -101,6 +109,8 @@ const updateCompany = async (req, res) => {
             "logo",
             "secNumber",
             "status",
+            "dateRegistered",
+            "corporateTin"
           ]);
 
         if (data.length > 0) {
