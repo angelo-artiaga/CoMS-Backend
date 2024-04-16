@@ -1,18 +1,6 @@
 import db from "../database/db.js";
 
 const createProfile = async (req, res) => {
-  const {
-    email,
-    first_name,
-    middle_name,
-    last_name,
-    date_of_birth,
-    account_type,
-    oauth_provider,
-    oauth_id,
-    oauth_access_token,
-  } = req.body;
-
   try {
     const data = await db("users").insert({
       email: email,

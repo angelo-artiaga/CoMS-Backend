@@ -4,19 +4,18 @@
  */
 exports.up = function (knex) {
   return knex.schema
-    .createTable("records", function (table) {
-      table.uuid("recordId").defaultTo(knex.fn.uuid()).primary();
+    .createTable("treasurerCertificate", function (table) {
+      table.uuid("tcId").defaultTo(knex.fn.uuid()).primary();
       table.uuid("companyId").references("companyId").inTable("companies");
-      table.string("recordName").nullable();
-      table.string("status").nullable();
-      table.json("draftingInput").nullable();
-      table.string("pdfFileLink").nullable();
-      table.string("secFileLink").nullable();
+      table.string("type").nullable();
+      table.string("treasurerCertificateId").nullable();
+      table.string("boardMeetingDate").nullable();
+      table.string("description").nullable();
       table.string("createdBy").nullable();
       table.timestamps(true, true);
     })
     .then(() => {
-      console.log("Record Created");
+      console.log("Treasurer Certificate Created");
     });
 };
 

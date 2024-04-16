@@ -7,6 +7,8 @@ exports.up = function (knex) {
     .createTable("companies", function (table) {
       table.uuid("companyId").defaultTo(knex.fn.uuid()).primary();
       table.string("companyName").notNullable();
+      table.string("corporateTin").notNullable();
+      table.string("dateRegistered").notNullable();
       table.string("logo").nullable();
       table.string("secNumber").nullable();
       table.boolean("status").notNullable().defaultTo(true);
