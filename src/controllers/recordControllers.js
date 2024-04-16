@@ -31,17 +31,25 @@ const createRecord = async (req, res) => {
     // recordName,
     status,
     draftingInput,
-    pdfInput,
-    // pdfFileLink,
-    // secFileLink,
+
     createdBy,
   } = req.body;
 
   try {
+
+    let toInsert = {
+      companyId: companyId,
+      recordName: recordName,
+      status: status,
+      draftingInput: JSON.stringify(draftingInput),
+      createdBy: createdBy,
+    };
+
     //check company if exist
     const companies = await db("companies")
       .select("*")
       .where("companyId", companyId);
+
 
     if (companies.length == 1) {
       //add to db if company ID exists
@@ -141,7 +149,6 @@ const updateRecord = async (req, res) => {
     recordName,
     status,
     draftingInput,
-    pdfInput,
     pdfFileLink,
     secFileLink,
     createdBy,
@@ -152,7 +159,6 @@ const updateRecord = async (req, res) => {
       recordName: recordName,
       status: status,
       draftingInput: JSON.stringify(draftingInput),
-      pdfInput: JSON.stringify(pdfInput),
       pdfFileLink: pdfFileLink,
       secFileLink: secFileLink,
       createdBy: createdBy,

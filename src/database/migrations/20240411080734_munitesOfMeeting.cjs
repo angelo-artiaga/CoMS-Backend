@@ -4,19 +4,18 @@
  */
 exports.up = function (knex) {
   return knex.schema
-    .createTable("records", function (table) {
-      table.uuid("recordId").defaultTo(knex.fn.uuid()).primary();
+    .createTable("munitesOfMeeting", function (table) {
+      table.uuid("momId").defaultTo(knex.fn.uuid()).primary();
       table.uuid("companyId").references("companyId").inTable("companies");
-      table.string("recordName").nullable();
-      table.string("status").nullable();
-      table.json("draftingInput").nullable();
-      table.string("pdfFileLink").nullable();
-      table.string("secFileLink").nullable();
+      table.string("boardMeetingDate").nullable();
+      table.string("typeOfMeeting").nullable();
+      table.string("placeOfMeeting").nullable();
+      table.string("quorum").nullable();
       table.string("createdBy").nullable();
       table.timestamps(true, true);
     })
     .then(() => {
-      console.log("Record Created");
+      console.log("Munites of Meeting Created");
     });
 };
 
