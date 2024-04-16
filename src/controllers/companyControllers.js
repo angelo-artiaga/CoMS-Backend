@@ -22,7 +22,7 @@ const uploadImage = async (imagePath, company_name) => {
 
 const getAllCompany = async (req, res) => {
   try {
-    const data = await db("companies").select("*");
+    const data = await db("companies").select("*").orderBy('created_at', 'asc');
     res.status(200).json(data);
   } catch (e) {
     res.json({ response: "ERROR!" });
@@ -35,17 +35,25 @@ const createCompany = async (req, res) => {
     if (req.file) {
       const result = await uploadImage(req.file.path, companyName);
       if (result != null) {
-        let toInsert = {
-          companyName: companyName,
-          logo: result.secure_url,
-          secNumber: secNumber,
-          status: true,
-        };
+        const data = await db("companies")
+          .insert({
+            companyName: companyName,
+            logo: result.secure_url,
+            secNumber: secNumber,
+            status: true,
+          })
+          .returning([
+            "companyId",
+            "companyName",
+            "logo",
+            "secNumber",
+            "status",
+          ]);
 
-        const data = await db("companies").insert(toInsert);
-
-        if (data) {
-          res.status(200).send(toInsert);
+        if (data.length > 0) {
+          res.status(200).send(data[0]);
+        } else {
+          res.status(422).send("Failed to insert the record");
         }
       }
     }
@@ -66,7 +74,7 @@ const getCompany = async (req, res) => {
       res.status(404).json({ error: `Company ID: ${companyId} is not found.` });
     }
   } catch (e) {
-    res.status(500).json({ error: "Invalid Company ID" });
+    res.status(500).json({ error: "Invalid Company ID", err: e });
   }
 };
 
@@ -78,20 +86,27 @@ const updateCompany = async (req, res) => {
     if (req.file) {
       const result = await uploadImage(req.file.path, companyName);
       if (result != null) {
-        let toUpdate = {
-          companyId: companyId,
-          companyName: companyName,
-          logo: result.secure_url,
-          secNumber: secNumber,
-          status: true,
-        };
-
         const data = await db("companies")
           .where("companyId", companyId)
-          .update(toUpdate);
+          .update({
+            companyId: companyId,
+            companyName: companyName,
+            logo: result.secure_url,
+            secNumber: secNumber,
+            status: true,
+          })
+          .returning([
+            "companyId",
+            "companyName",
+            "logo",
+            "secNumber",
+            "status",
+          ]);
 
-        if (data) {
-          res.status(200).send(toUpdate);
+        if (data.length > 0) {
+          res.status(200).json(data[0]);
+        } else {
+          res.status(422).send("Failed to update the record");
         }
       }
     }

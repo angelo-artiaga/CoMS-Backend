@@ -20,13 +20,14 @@ const getAllCompanyRecords = async (req, res) => {
     }
   } catch (e) {
     //returns 500 status code
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error", err: e });
   }
 };
 
 const createRecord = async (req, res) => {
   const {
     companyId,
+    recordId,
     // recordName,
     status,
     draftingInput,
@@ -51,12 +52,12 @@ const createRecord = async (req, res) => {
       //record name
       let recordName = `${draftingInput.corporate_name} GIS ${draftingInput.year}`;
 
-      if (draftingInput.corporate_name == "" || draftingInput.year == "") {
+      if (draftingInput.corporate_name === "" || draftingInput.year === "") {
         recordName = `${company.companyName} GIS ${new Date().getFullYear()}`;
       }
 
-      //Created an object to be inserted
-      let toInsert = {
+      //Create an object
+      let record = {
         companyId: company.companyId,
         recordName: recordName,
         status: status,
@@ -69,24 +70,44 @@ const createRecord = async (req, res) => {
 
       //Checks the status then append the user input based on its status
       if (status == "Saved as Draft") {
-        toInsert.draftingInput = JSON.stringify(draftingInput);
+        record.draftingInput = JSON.stringify(draftingInput);
       }
 
       //Checks the status then append the user input based on its status
       if (status == "Pending for Approval") {
-        toInsert.pdfInput = JSON.stringify(pdfInput);
+        record.pdfInput = JSON.stringify(pdfInput);
       }
 
-      //insert query to add toInsert object in db
-      const data = await db("records").insert(toInsert);
+      if (recordId !== "") {
+        //Update if the record is existing.
 
-      //checks if the data or the query was inserted
-      if (data) {
-        res.status(200).json(toInsert);
+        //insert query to add record object in db
+        let update = await db("records")
+          .where("recordId", recordId)
+          .update(record);
+
+        //checks if the data or the query was inserted
+        if (update) {
+          res.status(200).json(record);
+        } else {
+          res
+            .status(500)
+            .send({ error: `Failed to insert the record in the database.` });
+        }
       } else {
-        res
-          .status(500)
-          .send({ error: `Failed to insert the record to the database.` });
+        //else, insert the record.
+
+        //insert query to add record object in db
+        let insert = await db("records").insert(record);
+
+        //checks if the data or the query was inserted
+        if (insert) {
+          res.status(200).json(record);
+        } else {
+          res
+            .status(500)
+            .send({ error: `Failed to insert the record in the database.` });
+        }
       }
     } else {
       //return 404 status code if company ID does not exists
