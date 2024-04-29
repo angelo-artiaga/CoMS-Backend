@@ -36,7 +36,6 @@ const createRecord = async (req, res) => {
   } = req.body;
 
   try {
-
     // let toInsert = {
     //   companyId: companyId,
     //   recordName: recordName,
@@ -49,7 +48,6 @@ const createRecord = async (req, res) => {
     const companies = await db("companies")
       .select("*")
       .where("companyId", companyId);
-
 
     if (companies.length == 1) {
       //add to db if company ID exists
@@ -144,7 +142,7 @@ const getRecord = async (req, res) => {
 };
 
 const updateRecord = async (req, res) => {
-  const recordId = req.params.id;
+  const recordId = req.params.recordId;
   const {
     recordName,
     status,
@@ -153,6 +151,7 @@ const updateRecord = async (req, res) => {
     secFileLink,
     createdBy,
   } = req.body;
+
 
   try {
     let toUpdate = {
@@ -166,11 +165,19 @@ const updateRecord = async (req, res) => {
 
     const data = await db("records")
       .where("recordId", recordId)
-      .update(toUpdate);
+      .update(toUpdate).returning([
+        "recordId",
+        "recordName",
+        "draftingInput",
+        "pdfFileLink",
+        "secFileLink",
+        "createdBy",
+      ]);
 
-    console.log(data);
-    if (data) {
+    if (data.length > 0) {
       res.status(200).send(toUpdate);
+    }else{
+      res.status(422).send("Failed to update the record");
     }
   } catch (e) {
     console.log(e);
