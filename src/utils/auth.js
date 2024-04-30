@@ -6,7 +6,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/google/callback",
+      callbackURL: "/google/callback",
       passReqToCallback: true,
     },
     function (request, accessToken, refreshToken, profile, done) {
@@ -14,11 +14,8 @@ passport.use(
       //     console.log(user);
       //     return done(err, user);
       //   });
-      console.log(accessToken);
-      console.log(refreshToken);
-      console.log(profile);
 
-      return done(null, profile);
+      return done(null, {profile, accessToken});
     }
   )
 );

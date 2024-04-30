@@ -13,6 +13,7 @@ import passport from "passport";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
 app.use(
   session({
     secret: process.env.SECRET_KEY,
@@ -23,7 +24,12 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors());
+app.use(
+  cors({
+    origin:'http://localhost:5173', 
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(authenticate_route);
 app.use(organization_route);
