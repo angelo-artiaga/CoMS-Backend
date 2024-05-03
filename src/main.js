@@ -6,6 +6,7 @@ import authenticate_route from "./routes/authenticate_route.js";
 import user_route from "./routes/user_route.js";
 import companyRoute from "./routes/companyRoutes.js";
 import recordRoute from "./routes/recordRoutes.js";
+import board_meetings_route from "./routes/board_meetings_route.js";
 import db from "./database/db.js";
 import cors from "cors";
 import "./utils/auth.js";
@@ -26,17 +27,18 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(
   cors({
-    origin:'http://localhost:5173', 
+    origin: "http://192.168.88.214:5173",
     credentials: true,
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "20mb" })); //file size limit
 app.use(authenticate_route);
 app.use(organization_route);
 app.use(member_route);
 app.use(companyRoute);
 app.use(recordRoute);
 app.use(user_route);
+app.use(board_meetings_route);
 app.get("/", (req, res) => {
   db("users")
     .select("*")
