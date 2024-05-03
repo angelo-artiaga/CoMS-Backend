@@ -12,11 +12,23 @@ router.get(
   passport.authenticate("google", { scope: ["email", "profile"] })
 );
 
+router.get("/login/success", (req, res) => {
+  if (req.session.user) {
+    res.status(200).json({ user: req.session.user });
+  } else {
+    res.status(200).json({ user: null });
+  }
+});
+
+router.get("/login/failed", (req, res) => {
+  res.status(200).json("Login Failed");
+});
+
 router.get(
   "/google/callback",
   passport.authenticate("google", {
     successRedirect: "/authorized",
-    failureRedirect: "/unauthorized",
+    failureRedirect: "/login/failed",
   })
 );
 

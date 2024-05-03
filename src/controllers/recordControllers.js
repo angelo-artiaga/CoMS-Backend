@@ -13,10 +13,10 @@ const getAllCompanyRecords = async (req, res) => {
   const companyId = req.params.companyId;
   try {
     const data = await db("records").select("*").where("companyId", companyId);
-    if (data.length >= 1) {
+    if (data.length >= 0) {
       res.status(200).json(data);
     } else {
-      res.status(404).json({ error: "Company ID does not exists." });
+      res.status(404).json({ error: "No Records Found." });
     }
   } catch (e) {
     //returns 500 status code
@@ -36,20 +36,18 @@ const createRecord = async (req, res) => {
   } = req.body;
 
   try {
-
-    let toInsert = {
-      companyId: companyId,
-      recordName: recordName,
-      status: status,
-      draftingInput: JSON.stringify(draftingInput),
-      createdBy: createdBy,
-    };
+    // let toInsert = {
+    //   companyId: companyId,
+    //   recordName: recordName,
+    //   status: status,
+    //   draftingInput: JSON.stringify(draftingInput),
+    //   createdBy: createdBy,
+    // };
 
     //check company if exist
     const companies = await db("companies")
       .select("*")
       .where("companyId", companyId);
-
 
     if (companies.length == 1) {
       //add to db if company ID exists
@@ -69,22 +67,22 @@ const createRecord = async (req, res) => {
         companyId: company.companyId,
         recordName: recordName,
         status: status,
-        // draftingInput: JSON.stringify(draftingInput),
+        draftingInput: JSON.stringify(draftingInput),
         // pdfInput: JSON.stringify(pdfInput),
         // pdfFileLink: pdfFileLink,
         // secFileLink: secFileLink,
         createdBy: createdBy,
       };
 
-      //Checks the status then append the user input based on its status
-      if (status == "Saved as Draft") {
-        record.draftingInput = JSON.stringify(draftingInput);
-      }
+      // //Checks the status then append the user input based on its status
+      // if (status == "Saved as Draft") {
+      //   record.draftingInput = JSON.stringify(draftingInput);
+      // }
 
-      //Checks the status then append the user input based on its status
-      if (status == "Pending for Approval") {
-        record.pdfInput = JSON.stringify(pdfInput);
-      }
+      // //Checks the status then append the user input based on its status
+      // if (status == "Pending for Approval") {
+      //   record.pdfInput = JSON.stringify(pdfInput);
+      // }
 
       if (recordId !== "") {
         //Update if the record is existing.
@@ -144,7 +142,7 @@ const getRecord = async (req, res) => {
 };
 
 const updateRecord = async (req, res) => {
-  const recordId = req.params.id;
+  const recordId = req.params.recordId;
   const {
     recordName,
     status,
@@ -153,6 +151,7 @@ const updateRecord = async (req, res) => {
     secFileLink,
     createdBy,
   } = req.body;
+
 
   try {
     let toUpdate = {
@@ -166,11 +165,19 @@ const updateRecord = async (req, res) => {
 
     const data = await db("records")
       .where("recordId", recordId)
-      .update(toUpdate);
+      .update(toUpdate).returning([
+        "recordId",
+        "recordName",
+        "draftingInput",
+        "pdfFileLink",
+        "secFileLink",
+        "createdBy",
+      ]);
 
-    console.log(data);
-    if (data) {
+    if (data.length > 0) {
       res.status(200).send(toUpdate);
+    }else{
+      res.status(422).send("Failed to update the record");
     }
   } catch (e) {
     console.log(e);
