@@ -28,7 +28,6 @@ app.use(passport.session());
 app.use(
   cors({
     origin: [process.env.LOCALHOST_CLIENT_URL, process.env.CLIENT_URL],
-    default: process.env.CLIENT_URL,
     credentials: true,
   })
 );
