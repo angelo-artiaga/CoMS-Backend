@@ -8,7 +8,7 @@ const createSession = (req, res) => {
   res
     .status(200)
     .send(
-      `<script>window.location.href="http://localhost:5173/company"</script>`
+      `<script>window.location.href="${process.env.LOCALHOST_CLIENT_URL}/company"</script>`
     );
 };
 

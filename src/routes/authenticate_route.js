@@ -20,6 +20,10 @@ router.get("/login/success", (req, res) => {
   }
 });
 
+router.get("/login/failed", (req, res) => {
+  res.status(200).json("Login Failed");
+});
+
 router.get(
   "/google/callback",
   passport.authenticate("google", {
