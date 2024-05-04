@@ -1,5 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
+import { encodeToken } from "./token.js";
 
 passport.use(
   new GoogleStrategy(
@@ -15,7 +16,9 @@ passport.use(
       //     return done(err, user);
       //   });
 
-      return done(null, {profile, accessToken});
+      const token = encodeToken("accessToken", accessToken);
+      profile.jwtAccessToken = token;
+      return done(null, profile);
     }
   )
 );
