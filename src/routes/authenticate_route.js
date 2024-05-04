@@ -14,9 +14,9 @@ router.get(
 
 router.get("/login/success", (req, res) => {
   if (req.session.user) {
-    res.status(200).json({ user: req.session.user });
+    res.status(200).json({ user: req.session.user, session: req.session });
   } else {
-    res.status(200).json({ user: null });
+    res.status(200).json({ user: null, session: req.session });
   }
 });
 
