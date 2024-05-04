@@ -20,7 +20,13 @@ app.use(
     secret: process.env.SECRET_KEY,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true },
+    proxy: true,
+    rolling: true,
+    cookie: {
+      expires: 60 * 60 * 24,
+      secure: process.env.ENVIRONMENT !== "development",
+      sameSite: "lax",
+    },
   })
 );
 app.use(passport.initialize());
