@@ -5,11 +5,7 @@ const createSession = (req, res) => {
   req.session.user = req.user;
   req.session.user.jwtAccessToken = token;
   // console.log(req.session);
-  res
-    .status(200)
-    .send(
-      `<script>window.location.href="${process.env.CLIENT_URL}/company"</script>`
-    );
+  res.redirect(`${process.env.CLIENT_URL}/company`);
 };
 
 const destroySession = (req, res) => {
