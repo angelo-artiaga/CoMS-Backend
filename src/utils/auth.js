@@ -15,9 +15,7 @@ passport.use(
       //     console.log(user);
       //     return done(err, user);
       //   });
-
-      const token = encodeToken("accessToken", accessToken);
-      profile.jwtAccessToken = token;
+      profile.accessToken = accessToken;
       return done(null, profile);
     }
   )
