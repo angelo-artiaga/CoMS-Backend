@@ -8,7 +8,6 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${process.env.DOMAIN_NAME}/google/callback`,
-      passReqToCallback: true,
     },
     function (request, accessToken, refreshToken, profile, done) {
       //   User.findOrCreate({ googleId: profile.id }, function (err, user) {
