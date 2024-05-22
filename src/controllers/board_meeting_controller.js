@@ -312,6 +312,120 @@ const fetchAvailableBMDates = async (req, res) => {
   }
 };
 
+const getAllBoardResolution = async (req, res) => {
+  const companyId = req.params.companyId;
+  try {
+    const data = await db("boardResolution")
+      .column(
+        "brId",
+        { type_of_meeting: "type" },
+        { resolution_id: "boardResolutionId" },
+        { board_meeting_date: "boardMeetingDate" },
+        "description"
+      )
+      .select()
+      .where("companyId", companyId);
+
+    if (data.length >= 0) {
+      res.status(200).json(data);
+    } else {
+      res.status(404).json({ error: "No Records Found." });
+    }
+  } catch (e) {
+    res.status(500).json({ error: "Internal Server Error", err: e });
+  }
+};
+
+const addBoardResolution = async (req, res) => {
+  const { type_of_meeting, board_meeting_date, resolution_id, description } =
+    req.body;
+
+  const companyId = req.params.companyId;
+
+  let toInsert = {
+    companyId: companyId,
+    type: type_of_meeting,
+    boardMeetingDate: board_meeting_date,
+    boardResolutionId: resolution_id,
+    description: description,
+  };
+
+  try {
+    const data = await db("boardResolution")
+      .insert(toInsert)
+      .returning([
+        "brId",
+        "companyId",
+        "type",
+        "boardResolutionId",
+        "boardMeetingDate",
+        "description",
+        "createdBy",
+      ]);
+
+    if (data.length > 0) {
+      res.status(200).send({ success: true, data: data });
+    } else {
+      res
+        .status(422)
+        .send({ success: false, error: "Failed to insert the record" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error });
+  }
+};
+
+const updateBoardResolution = async (req, res) => {
+  const {
+    type_of_meeting,
+    resolution_id,
+    board_meeting_date,
+    description,
+    brId,
+  } = req.body;
+
+  try {
+    const toUpdate = {
+      type: type_of_meeting,
+      boardResolutionId: resolution_id,
+      boardMeetingDate: board_meeting_date,
+      description: description,
+    };
+
+    let update = await db("boardResolution")
+      .update(toUpdate)
+      .where("brId", brId)
+      .returning([
+        "brId",
+        "type",
+        "boardResolutionId",
+        "boardMeetingDate",
+        "description",
+      ]);
+
+    if (update.length >= 1) {
+      res.status(200).json({ success: true, data: update });
+    } else {
+      res.status(422).json("Failed to update the record");
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error", err: error });
+  }
+};
+
+const deleteBoardResolution = async (req, res) => {
+  try {
+    let boardResolution = await db("boardResolution")
+      .where("brId", req.params.brId)
+      .delete();
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error", err: error });
+  }
+};
+
 export {
   getNoticeOfMeeting,
   getAllNoticeOfMeeting,
@@ -321,4 +435,8 @@ export {
   getAllMinutesOfMeeting,
   updateMinutesOfMeeting,
   fetchAvailableBMDates,
+  addBoardResolution,
+  getAllBoardResolution,
+  updateBoardResolution,
+  deleteBoardResolution,
 };
