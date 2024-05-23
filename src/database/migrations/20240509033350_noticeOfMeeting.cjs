@@ -13,7 +13,6 @@ exports.up = function (knex) {
       table.string("status").nullable();
       table.string("placeOfMeeting").nullable();
       table.string("quorum").nullable();
-      table.string("folder_id").nullable();
       table.timestamps(true, true);
     })
     .then(() => {
