@@ -4,15 +4,16 @@
  */
 exports.up = function (knex) {
   return knex.schema
-    .createTable("file", function (table) {
+    .createTable("finalDocs", function (table) {
       table.uuid("fileId").defaultTo(knex.fn.uuid()).primary();
-      table.uuid("nomId").references("nomId").inTable("noticeOfMeeting");
+      table.uuid("companyId").references("companyId").inTable("companies");
       table.string("fileName").nullable();
+      table.string("fileType").nullable();
       table.string("fileLink").nullable();
       table.timestamps(true, true);
     })
     .then(() => {
-      console.log("file Table Created");
+      console.log("Final Documents Table Created");
     });
 };
 
