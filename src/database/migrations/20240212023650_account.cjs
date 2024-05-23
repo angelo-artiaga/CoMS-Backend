@@ -10,6 +10,7 @@ exports.up = function (knex) {
       table.string("first_name").notNullable();
       table.string("middle_name").nullable();
       table.string("last_name").notNullable();
+      table.string("last_login").notNullable();
       table.string("token").notNullable().unique();
       table.string("refresh_token").notNullable().unique();
       table.timestamps(true, true);
