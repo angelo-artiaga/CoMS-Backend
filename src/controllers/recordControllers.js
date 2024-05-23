@@ -152,7 +152,6 @@ const updateRecord = async (req, res) => {
     createdBy,
   } = req.body;
 
-
   try {
     let toUpdate = {
       recordName: recordName,
@@ -165,7 +164,8 @@ const updateRecord = async (req, res) => {
 
     const data = await db("records")
       .where("recordId", recordId)
-      .update(toUpdate).returning([
+      .update(toUpdate)
+      .returning([
         "recordId",
         "recordName",
         "draftingInput",
@@ -176,7 +176,7 @@ const updateRecord = async (req, res) => {
 
     if (data.length > 0) {
       res.status(200).send(toUpdate);
-    }else{
+    } else {
       res.status(422).send("Failed to update the record");
     }
   } catch (e) {
@@ -185,7 +185,7 @@ const updateRecord = async (req, res) => {
   }
 };
 const deleteRecord = async (req, res) => {
-  const recordId = req.params.id;
+  const recordId = req.params.recordId;
 
   try {
     const data = await db("records")
