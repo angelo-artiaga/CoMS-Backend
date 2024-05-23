@@ -6,10 +6,12 @@
 module.exports = {
   development: {
     client: "postgresql",
-    connection:
-      process.env.ENVIRONMENT === "production"
-        ? process.env.DB_CONN_STRING
-        : process.env.LOCAL_DB_CONN_STRING,
+    // connection: {
+    //   database: process.env.DB_NAME,
+    //   user: process.env.DB_USER,
+    //   password: process.env.DB_PASSWORD,
+    // },
+    connection: process.env.DB_CONN_STRING,
     pool: {
       min: 2,
       max: 10,
@@ -21,11 +23,12 @@ module.exports = {
 
   production: {
     client: "postgresql",
-
-    connection:
-      process.env.ENVIRONMENT === "production"
-        ? process.env.DB_CONN_STRING
-        : process.env.LOCAL_DB_CONN_STRING,
+    // connection: {
+    //   database: process.env.DB_NAME,
+    //   user: process.env.DB_USER,
+    //   password: process.env.DB_PASSWORD,
+    // },
+    connection: process.env.DB_CONN_STRING,
     pool: {
       min: 2,
       max: 10,
