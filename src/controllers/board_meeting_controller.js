@@ -13,10 +13,12 @@ const getAllNoticeOfMeeting = async (req, res) => {
         { type_of_meeting: "typeOfMeeting" },
         { proposed_meeting_date: "proposedMeetingDate" },
         "status",
-        "folder_id"
+        "folder_id",
+        "created_at"
       )
       .select()
-      .where("companyId", companyId);
+      .where("companyId", companyId)
+      .orderBy("created_at", "desc");
 
     if (data.length >= 0) {
       const newData = await Promise.all(
@@ -215,11 +217,13 @@ const getAllMinutesOfMeeting = async (req, res) => {
         { place_of_meeting: "placeOfMeeting" },
         "quorum",
         "status",
-        "folder_id"
+        "folder_id",
+        "created_at"
       )
       .select()
       .where("companyId", companyId)
-      .where("status", "Notice Completed");
+      .where("status", "Notice Completed")
+      .orderBy("created_at", "desc");
 
     if (data.length >= 0) {
       const newData = await Promise.all(
@@ -321,10 +325,12 @@ const getAllBoardResolution = async (req, res) => {
         { type_of_meeting: "type" },
         { resolution_id: "boardResolutionId" },
         { board_meeting_date: "boardMeetingDate" },
-        "description"
+        "description",
+        "created_at"
       )
       .select()
-      .where("companyId", companyId);
+      .where("companyId", companyId)
+      .orderBy("created_at", "desc");
 
     if (data.length >= 0) {
       res.status(200).json(data);

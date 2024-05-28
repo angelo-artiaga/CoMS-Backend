@@ -1,14 +1,10 @@
 import express from "express";
 import {
-  createDocs,
-  deleteDocs,
-  getAllDocs,
-  getDocs,
-  updateDocs,
-} from "../controllers/finaldocs_controllers";
+  addFinalDocs,
+  getAllFinalDocs,
+} from "../controllers/finaldocs_controllers.js";
 const router = express.Router();
 
-router.route("/").get(getAllDocs).post(createDocs);
-router.route("/:id").get(getDocs).put(updateDocs).delete(deleteDocs);
+router.route("/finaldocs/:companyId").get(getAllFinalDocs).post(addFinalDocs);
 
 export default router;
