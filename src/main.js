@@ -7,6 +7,7 @@ import user_route from "./routes/user_route.js";
 import companyRoute from "./routes/companyRoutes.js";
 import recordRoute from "./routes/recordRoutes.js";
 import board_meetings_route from "./routes/board_meetings_route.js";
+import finaldocs_route from "./routes/finaldocs_routes.js";
 import db from "./database/db.js";
 import cors from "cors";
 import "./utils/auth.js";
@@ -45,6 +46,7 @@ app.use(companyRoute);
 app.use(recordRoute);
 app.use(user_route);
 app.use(board_meetings_route);
+app.use(finaldocs_route);
 app.get("/", (req, res) => {
   db("users")
     .select("*")
