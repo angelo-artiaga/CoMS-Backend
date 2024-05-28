@@ -12,7 +12,6 @@ import db from "./database/db.js";
 import cors from "cors";
 import "./utils/auth.js";
 import passport from "passport";
-import "dotenv/config";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
