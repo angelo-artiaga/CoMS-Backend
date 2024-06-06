@@ -67,4 +67,66 @@ const deleteProfile = async (req, res) => {
   }
 };
 
-export { createProfile, viewProfile, updateProfile, deleteProfile };
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await db("users").select("*");
+
+    let user_with_roles = await Promise.all(
+      users.map(async (user) => {
+        let user_role = await db("user_roles")
+          .select("*")
+          .join("roles", "user_roles.role_id", "roles.role_id")
+          .where("user_id", user.user_id);
+        user.role = user_role;
+        return user;
+      })
+    );
+
+    res.status(200).json(user_with_roles);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
+const updateUser = async (req, res) => {
+  const { role_id } = req.params;
+  const { role_name, permissions } = req.body;
+  try {
+    // let toUpdate = {
+    //   role_name: role_name,
+    // };
+    // const updaterole = await db("roles")
+    //   .update(toUpdate)
+    //   .where("role_id", role_id)
+    //   .returning(["role_id", "role_name"]);
+
+    // //delete all permissions associated with the role
+    // const deleterolepermisions = await db("role_permissions")
+    //   .where("role_id", role_id)
+    //   .delete();
+
+    // // //add all permissions that is from the req.body to update the permissions
+    // permissions.map(async (permission) => {
+    //   await assignPermission({
+    //     role_id: role_id,
+    //     permission_id: permission.permission_id,
+    //   });
+    // });
+
+    // res.status(200).json({ success: true, result: updaterole });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error", err: error });
+  }
+};
+
+export {
+  createProfile,
+  viewProfile,
+  updateProfile,
+  deleteProfile,
+  getAllUsers,
+  updateUser,
+};
