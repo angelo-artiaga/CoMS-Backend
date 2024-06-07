@@ -89,31 +89,30 @@ const getAllUsers = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { role_id } = req.params;
-  const { role_name, permissions } = req.body;
+  const { user_id } = req.params;
+  const { status, role } = req.body;
+
+  // console.log(req.body);
+  // res.status(200).json(req.body);
+  // return;
   try {
-    // let toUpdate = {
-    //   role_name: role_name,
-    // };
-    // const updaterole = await db("roles")
-    //   .update(toUpdate)
-    //   .where("role_id", role_id)
-    //   .returning(["role_id", "role_name"]);
+    let toUpdate = {
+      status: status,
+    };
+    const updateuser = await db("users")
+      .update(toUpdate)
+      .where("user_id", user_id)
+      .returning(["user_id", "status"]);
 
-    // //delete all permissions associated with the role
-    // const deleterolepermisions = await db("role_permissions")
-    //   .where("role_id", role_id)
-    //   .delete();
-
-    // // //add all permissions that is from the req.body to update the permissions
-    // permissions.map(async (permission) => {
-    //   await assignPermission({
-    //     role_id: role_id,
-    //     permission_id: permission.permission_id,
-    //   });
-    // });
-
-    // res.status(200).json({ success: true, result: updaterole });
+    //delete all permissions associated with the role
+    const deleteuserrole = await db("user_roles")
+      .where("user_id", user_id)
+      .delete();
+    // assign role based from the request
+    role.map(async (role) => {
+      await db("user_roles").insert({role_id: role.role_id, user_id: user_id});
+    });
+    res.status(200).json({ success: true, result: updateuser });
   } catch (error) {
     console.log(error);
     res
