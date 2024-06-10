@@ -65,6 +65,8 @@ const authGoogle = async (req, res) => {
         first_name: given_name,
         // middle_name,
         last_name: family_name,
+        last_login: new Date().toLocaleString(),
+        status: "Active",
         token: access_token,
         refresh_token: refresh_token,
       };
@@ -88,9 +90,14 @@ const authGoogle = async (req, res) => {
         });
       }
     } else {
+
+      if(user[0].status == "Inactive"){
+        return res.status(200).json({ success: false, tokens, error: "Status: Inactive" });
+      }
       const updateuser = await db("users")
         .update({
           token: access_token,
+          last_login: new Date().toLocaleString(),
           refresh_token: refresh_token,
         })
         .where("user_id", user[0].user_id)
