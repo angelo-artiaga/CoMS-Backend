@@ -90,6 +90,10 @@ const authGoogle = async (req, res) => {
         });
       }
     } else {
+
+      if(user[0].status == "Inactive"){
+        return res.status(200).json({ success: false, tokens, error: "Status: Inactive" });
+      }
       const updateuser = await db("users")
         .update({
           token: access_token,
