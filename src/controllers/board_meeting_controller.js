@@ -1,7 +1,24 @@
 import { uploadImage } from "../utils/cloudinary.js";
 import db from "../database/db.js";
 
-const getNoticeOfMeeting = async (req, res) => {};
+const getNoticeOfMeeting = async (req, res) => {
+  let status = 500;
+  let data = {};
+  try {
+    let noticeOfMeeting = await db("noticeOfMeeting").select("*").where("nomId", req.params.nomId);
+    if (noticeOfMeeting.length > 0) {
+      status = 200;
+      data.success = true;
+      data.result = noticeOfMeeting;
+    }
+  } catch (error) {
+    status = 500;
+    data.success = false;
+    data.error = error;
+  } finally {
+    res.status(status).json(data);
+  }
+};
 
 const getAllNoticeOfMeeting = async (req, res) => {
   const companyId = req.params.companyId;
