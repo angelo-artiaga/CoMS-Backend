@@ -29,7 +29,15 @@ const getAllCompany = async (req, res) => {
   }
 };
 const createCompany = async (req, res) => {
-  const { companyName, secNumber, corporateTin, dateRegistered } = req.body;
+  const {
+    companyName,
+    secNumber,
+    corporateTin,
+    dateRegistered,
+    sss,
+    hdmf,
+    philHealth,
+  } = req.body;
 
   try {
     if (req.file) {
@@ -39,6 +47,9 @@ const createCompany = async (req, res) => {
           .insert({
             companyName: companyName,
             logo: result.secure_url,
+            sss: sss,
+            hdmf: hdmf,
+            philHealth: philHealth,
             secNumber: secNumber,
             corporateTin: corporateTin,
             dateRegistered: dateRegistered,
@@ -48,6 +59,9 @@ const createCompany = async (req, res) => {
             "companyId",
             "companyName",
             "logo",
+            "sss",
+            "hdmf",
+            "philHealth",
             "secNumber",
             "corporateTin",
             "dateRegistered",
@@ -86,7 +100,15 @@ const getCompany = async (req, res) => {
 
 const updateCompany = async (req, res) => {
   const companyId = req.params.id;
-  const { companyName, secNumber, corporateTin, dateRegistered } = req.body;
+  const {
+    companyName,
+    secNumber,
+    corporateTin,
+    dateRegistered,
+    sss,
+    hdmf,
+    philHealth,
+  } = req.body;
 
   try {
     if (req.file) {
@@ -102,6 +124,9 @@ const updateCompany = async (req, res) => {
             corporateTin: corporateTin,
             dateRegistered: dateRegistered,
             status: true,
+            sss: sss,
+            hdmf: hdmf,
+            philHealth: philHealth,
           })
           .returning([
             "companyId",
@@ -110,7 +135,10 @@ const updateCompany = async (req, res) => {
             "secNumber",
             "status",
             "dateRegistered",
-            "corporateTin"
+            "corporateTin",
+            "sss",
+            "hdmf",
+            "philHealth",
           ]);
 
         if (data.length > 0) {
