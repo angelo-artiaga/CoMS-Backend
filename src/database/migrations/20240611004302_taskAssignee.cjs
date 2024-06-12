@@ -6,7 +6,7 @@ exports.up = function (knex) {
   return knex.schema
     .createTable("taskAssignee", function (table) {
       table.uuid("taskAssigneeId").defaultTo(knex.fn.uuid()).primary();
-      table.uuid("tasktId").references("taskId").inTable("task");
+      table.uuid("taskId").references("taskId").inTable("task");
       table.string("AssigneeName").nullable();
       table.timestamps(true, true);
     })
