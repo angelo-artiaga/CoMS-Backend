@@ -10,6 +10,7 @@ import board_meetings_route from "./routes/board_meetings_route.js";
 import finaldocs_route from "./routes/finaldocs_routes.js";
 import roles_route from "./routes/roles_route.js";
 import permission_route from "./routes/permissions_route.js";
+import task_route from "./routes/task_route.js";
 import db from "./database/db.js";
 import cors from "cors";
 import "./utils/auth.js";
@@ -51,6 +52,7 @@ app.use(board_meetings_route);
 app.use(finaldocs_route);
 app.use(roles_route);
 app.use(permission_route);
+app.use(task_route);
 app.get("/", (req, res) => {
   db("users")
     .select("*")
