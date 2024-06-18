@@ -28,6 +28,7 @@ const getAllCompany = async (req, res) => {
     res.status(500).json({ response: "ERROR!" });
   }
 };
+
 const createCompany = async (req, res) => {
   const {
     companyName,
@@ -78,7 +79,7 @@ const createCompany = async (req, res) => {
       }
     }
   } catch (e) {
-    res.status(200).json({ response: "ERROR!" });
+    res.status(500).json({ response: "ERROR!" });
   }
 };
 
@@ -108,6 +109,7 @@ const updateCompany = async (req, res) => {
     sss,
     hdmf,
     philHealth,
+    gdrivefolders,
   } = req.body;
 
   try {
@@ -127,6 +129,7 @@ const updateCompany = async (req, res) => {
             sss: sss,
             hdmf: hdmf,
             philHealth: philHealth,
+            gdrivefolders: gdrivefolders,
           })
           .returning([
             "companyId",
@@ -147,25 +150,44 @@ const updateCompany = async (req, res) => {
           res.status(422).send("Failed to update the record");
         }
       }
+    } else {
+      const data = await db("companies")
+        .where("companyId", companyId)
+        .update({
+          companyId: companyId,
+          companyName: companyName,
+          secNumber: secNumber,
+          corporateTin: corporateTin,
+          dateRegistered: dateRegistered,
+          status: true,
+          sss: sss,
+          hdmf: hdmf,
+          philHealth: philHealth,
+          gdrivefolders: gdrivefolders,
+        })
+        .returning([
+          "companyId",
+          "companyName",
+          "logo",
+          "secNumber",
+          "status",
+          "dateRegistered",
+          "corporateTin",
+          "sss",
+          "hdmf",
+          "philHealth",
+          "gdrivefolders",
+        ]);
+
+      if (data.length > 0) {
+        res.status(200).json(data[0]);
+      } else {
+        res.status(422).send("Failed to update the record");
+      }
     }
-    // else {
-    //   let toUpdate = {
-    //     companyId: companyId,
-    //     companyName: companyName,
-    //     secNumber: secNumber,
-    //   };
-    //   const data = await db("companies")
-    //     .where("companyId", companyId)
-    //     .update(toUpdate);
-
-    //   if (data) {
-
-    //     res.status(200).send(toUpdate);
-    //   }
-    // }
   } catch (e) {
     console.log(e);
-    res.json({ response: "ERROR!" });
+    res.status(500).json({ response: "ERROR!" });
   }
 };
 
