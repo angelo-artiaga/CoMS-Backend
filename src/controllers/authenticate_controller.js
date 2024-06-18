@@ -3,6 +3,7 @@ import { encodeToken } from "../utils/token.js";
 import { GoogleAuth, OAuth2Client } from "google-auth-library";
 import axios from "axios";
 import db from "../database/db.js";
+import moment from "moment";
 
 const oAuth2Client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
@@ -116,7 +117,7 @@ const authGoogle = async (req, res) => {
       const updateuser = await db("users")
         .update({
           token: access_token,
-          last_login: new Date().toLocaleString(),
+          last_login: moment().format('MMMM Do YYYY, h:mm:ss a'),
           refresh_token: refresh_token,
         })
         .where("user_id", user[0].user_id)

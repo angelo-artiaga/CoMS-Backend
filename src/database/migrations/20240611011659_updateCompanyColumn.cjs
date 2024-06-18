@@ -5,9 +5,7 @@
 exports.up = function (knex) {
   return knex.schema
     .table("companies", function (table) {
-      table.string("sss").notNullable();
-      table.string("hdmf").nullable();
-      table.string("philHealth").nullable();
+      table.text("gdrivefolders").nullable();
     })
     .then(() => {
       console.log("Company table updated");
@@ -18,4 +16,8 @@ exports.up = function (knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function (knex) {};
+exports.down = function (knex) {
+  return knex.schema.table("companies", (table) => {
+    table.dropColumn("gdrivefolders");
+  });
+};
