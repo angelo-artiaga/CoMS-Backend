@@ -28,8 +28,17 @@ const getAllCompany = async (req, res) => {
     res.status(500).json({ response: "ERROR!" });
   }
 };
+
 const createCompany = async (req, res) => {
-  const { companyName, secNumber, corporateTin, dateRegistered } = req.body;
+  const {
+    companyName,
+    secNumber,
+    corporateTin,
+    dateRegistered,
+    sss,
+    hdmf,
+    philHealth,
+  } = req.body;
 
   try {
     if (req.file) {
@@ -39,6 +48,9 @@ const createCompany = async (req, res) => {
           .insert({
             companyName: companyName,
             logo: result.secure_url,
+            sss: sss,
+            hdmf: hdmf,
+            philHealth: philHealth,
             secNumber: secNumber,
             corporateTin: corporateTin,
             dateRegistered: dateRegistered,
@@ -48,6 +60,9 @@ const createCompany = async (req, res) => {
             "companyId",
             "companyName",
             "logo",
+            "sss",
+            "hdmf",
+            "philHealth",
             "secNumber",
             "corporateTin",
             "dateRegistered",
@@ -64,7 +79,7 @@ const createCompany = async (req, res) => {
       }
     }
   } catch (e) {
-    res.status(200).json({ response: "ERROR!" });
+    res.status(500).json({ response: "ERROR!" });
   }
 };
 
@@ -86,7 +101,16 @@ const getCompany = async (req, res) => {
 
 const updateCompany = async (req, res) => {
   const companyId = req.params.id;
-  const { companyName, secNumber, corporateTin, dateRegistered } = req.body;
+  const {
+    companyName,
+    secNumber,
+    corporateTin,
+    dateRegistered,
+    sss,
+    hdmf,
+    philHealth,
+    gdrivefolders,
+  } = req.body;
 
   try {
     if (req.file) {
@@ -102,6 +126,10 @@ const updateCompany = async (req, res) => {
             corporateTin: corporateTin,
             dateRegistered: dateRegistered,
             status: true,
+            sss: sss,
+            hdmf: hdmf,
+            philHealth: philHealth,
+            gdrivefolders: gdrivefolders,
           })
           .returning([
             "companyId",
@@ -110,7 +138,10 @@ const updateCompany = async (req, res) => {
             "secNumber",
             "status",
             "dateRegistered",
-            "corporateTin"
+            "corporateTin",
+            "sss",
+            "hdmf",
+            "philHealth",
           ]);
 
         if (data.length > 0) {
@@ -119,25 +150,44 @@ const updateCompany = async (req, res) => {
           res.status(422).send("Failed to update the record");
         }
       }
+    } else {
+      const data = await db("companies")
+        .where("companyId", companyId)
+        .update({
+          companyId: companyId,
+          companyName: companyName,
+          secNumber: secNumber,
+          corporateTin: corporateTin,
+          dateRegistered: dateRegistered,
+          status: true,
+          sss: sss,
+          hdmf: hdmf,
+          philHealth: philHealth,
+          gdrivefolders: gdrivefolders,
+        })
+        .returning([
+          "companyId",
+          "companyName",
+          "logo",
+          "secNumber",
+          "status",
+          "dateRegistered",
+          "corporateTin",
+          "sss",
+          "hdmf",
+          "philHealth",
+          "gdrivefolders",
+        ]);
+
+      if (data.length > 0) {
+        res.status(200).json(data[0]);
+      } else {
+        res.status(422).send("Failed to update the record");
+      }
     }
-    // else {
-    //   let toUpdate = {
-    //     companyId: companyId,
-    //     companyName: companyName,
-    //     secNumber: secNumber,
-    //   };
-    //   const data = await db("companies")
-    //     .where("companyId", companyId)
-    //     .update(toUpdate);
-
-    //   if (data) {
-
-    //     res.status(200).send(toUpdate);
-    //   }
-    // }
   } catch (e) {
     console.log(e);
-    res.json({ response: "ERROR!" });
+    res.status(500).json({ response: "ERROR!" });
   }
 };
 
