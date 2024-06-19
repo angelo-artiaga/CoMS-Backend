@@ -64,11 +64,6 @@ app.get("/", (req, res) => {
   res.sendStatus(200);
 });
 
-app.get("/test", (req, res) => {
-  let d = moment().format("MMMM Do YYYY, hh:mm:ss");
-  res.status(200).json(d);
-});
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

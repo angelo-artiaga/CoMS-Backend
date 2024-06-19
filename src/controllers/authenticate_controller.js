@@ -37,16 +37,26 @@ const authCheck = async (req, res) => {
       .select("*")
       .where("users.email", tokenInfo.email);
 
-    const user_roles = await db("user_roles").select("*").where("user_id", user[0].user_id);
+    const user_roles = await db("user_roles")
+      .select("*")
+      .where("user_id", user[0].user_id);
 
     let permissions = [];
     let roles = [];
-    if(user_roles.length > 0){
-      roles = await db("roles").select("role_name", "role_id").where("role_id", user_roles[0].role_id);
+    if (user_roles.length > 0) {
+      roles = await db("roles")
+        .select("role_name", "role_id")
+        .where("role_id", user_roles[0].role_id);
       if (roles.length > 0) {
-        permissions = await db("role_permissions").select("*")
+        permissions = await db("role_permissions")
+          .select("*")
           .where("role_id", roles[0].role_id)
-          .join("permissions", "permissions.permission_id", "role_permissions.permission_id").pluck("permission_name");
+          .join(
+            "permissions",
+            "permissions.permission_id",
+            "role_permissions.permission_id"
+          )
+          .pluck("permission_name");
       }
     }
 
@@ -110,14 +120,15 @@ const authGoogle = async (req, res) => {
         });
       }
     } else {
-
       if (user[0].status == "Inactive") {
-        return res.status(200).json({ success: false, tokens, error: "Status: Inactive" });
+        return res
+          .status(200)
+          .json({ success: false, tokens, error: "Status: Inactive" });
       }
       const updateuser = await db("users")
         .update({
           token: access_token,
-          last_login: moment().format('MMMM Do YYYY, h:mm:ss a'),
+          last_login: moment(new Date()).format("MM/DD/YYYY HH:mm:ss"),
           refresh_token: refresh_token,
         })
         .where("user_id", user[0].user_id)
