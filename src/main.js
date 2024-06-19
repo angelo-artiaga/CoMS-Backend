@@ -15,6 +15,7 @@ import db from "./database/db.js";
 import cors from "cors";
 import "./utils/auth.js";
 import passport from "passport";
+import moment from "moment";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -61,6 +62,11 @@ app.get("/", (req, res) => {
       console.log(rows);
     });
   res.sendStatus(200);
+});
+
+app.get("/test", (req, res) => {
+  let d = moment().format("MMMM Do YYYY, hh:mm:ss");
+  res.status(200).json(d);
 });
 
 app.listen(PORT, () => {
