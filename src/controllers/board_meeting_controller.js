@@ -139,6 +139,7 @@ const updateNoticeOfMeeting = async (req, res) => {
     status,
     type_of_meeting,
     nomId,
+    folder_id
   } = req.body;
 
   try {
@@ -147,7 +148,9 @@ const updateNoticeOfMeeting = async (req, res) => {
       typeOfMeeting: type_of_meeting,
       proposedMeetingDate: proposed_meeting_date,
       status: status,
+      folder_id: folder_id,
     };
+
     let update = await db("noticeOfMeeting")
       .update(toUpdate)
       .where("nomId", nomId)
@@ -157,6 +160,7 @@ const updateNoticeOfMeeting = async (req, res) => {
         "typeOfMeeting",
         "proposedMeetingDate",
         "status",
+        "folder_id",
       ]);
 
     if (update.length >= 1) {
