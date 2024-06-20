@@ -1,5 +1,20 @@
 import db from "../database/db.js";
 
+const getAllAssigneeTask = async (req, res) => {
+  const { taskAssigneeId } = req.params;
+
+  try {
+    const tasks = await db("tasks")
+      .select("tasks.*")
+      .join("taskAssignee", "tasks.taskId", "taskAssignee.taskId")
+      .where("taskAssignee.assigneeId", taskAssigneeId);
+
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const getTask = async (req, res) => {
   const { id } = req.params;
 
@@ -57,9 +72,14 @@ const getTask = async (req, res) => {
 };
 
 const getAllTask = async (req, res) => {
+  const companyId = req.params.companyId;
+
+  console.log(companyId);
   try {
     // Query all service agreements
-    const serviceAgreements = await db("serviceAgreement").select("*");
+    const serviceAgreements = await db("serviceAgreement")
+      .select("*")
+      .where("companyId", companyId);
 
     // Initialize an array to store the formatted data
     const agreementsWithTasksAndAssignees = [];
@@ -88,6 +108,7 @@ const getAllTask = async (req, res) => {
 
         // Push task with assignees to tasksWithAssignees array
         tasksWithAssignees.push({
+          taskId: task.taskId,
           task: task.task,
           targetDate: task.targetDate,
           status: task.status,
@@ -97,6 +118,7 @@ const getAllTask = async (req, res) => {
 
       // Push service agreement with tasks and assignees to agreementsWithTasksAndAssignees array
       agreementsWithTasksAndAssignees.push({
+        serviceAgreementId: agreement.serviceAgreementId,
         agreementName: agreement.agreementName,
         companyId: agreement.companyId,
         fileLink: agreement.fileLink, // Assuming fileLink is in serviceAgreement table
@@ -189,7 +211,8 @@ const updateTask = async (req, res) => {
 };
 
 const createTask = async (req, res) => {
-  const { agreementName, companyId, tasks, fileLink } = req.body;
+  const { agreementName, tasks, fileLink } = req.body;
+  const companyId = req.params.companyId;
 
   if (!agreementName || !companyId || !tasks || !fileLink) {
     return res.status(400).json({ error: "Invalid input" });
@@ -273,4 +296,11 @@ const deleteTask = async (req, res) => {
   }
 };
 
-export { getTask, getAllTask, updateTask, createTask, deleteTask };
+export {
+  getTask,
+  getAllTask,
+  updateTask,
+  createTask,
+  deleteTask,
+  getAllAssigneeTask,
+};
