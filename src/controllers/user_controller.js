@@ -88,6 +88,35 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  const { id } = req.params; // Extracting the user ID from the request parameters
+
+  try {
+    // Fetch the user details by ID
+    const user = await db("users").select("*").where("user_id", id).first();
+
+    if (!user) {
+      // If no user is found, return a 404 status with a message
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Fetch the user's roles
+    const userRoles = await db("user_roles")
+      .select("roles.*")
+      .join("roles", "user_roles.role_id", "roles.role_id")
+      .where("user_roles.user_id", id);
+
+    // Add the roles to the user object
+    user.roles = userRoles;
+
+    // Return the user object with roles
+    res.status(200).json(user);
+  } catch (error) {
+    // Handle any errors that occur during the database operations
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const updateUser = async (req, res) => {
   const { user_id } = req.params;
   const { status, role } = req.body;
@@ -110,7 +139,10 @@ const updateUser = async (req, res) => {
       .delete();
     // assign role based from the request
     role.map(async (role) => {
-      await db("user_roles").insert({role_id: role.role_id, user_id: user_id});
+      await db("user_roles").insert({
+        role_id: role.role_id,
+        user_id: user_id,
+      });
     });
     res.status(200).json({ success: true, result: updateuser });
   } catch (error) {
@@ -127,5 +159,6 @@ export {
   updateProfile,
   deleteProfile,
   getAllUsers,
+  getUser,
   updateUser,
 };
