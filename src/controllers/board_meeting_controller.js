@@ -5,7 +5,9 @@ const getNoticeOfMeeting = async (req, res) => {
   let status = 500;
   let data = {};
   try {
-    let noticeOfMeeting = await db("noticeOfMeeting").select("*").where("nomId", req.params.nomId);
+    let noticeOfMeeting = await db("noticeOfMeeting")
+      .select("*")
+      .where("nomId", req.params.nomId);
     if (noticeOfMeeting.length > 0) {
       status = 200;
       data.success = true;
@@ -139,7 +141,7 @@ const updateNoticeOfMeeting = async (req, res) => {
     status,
     type_of_meeting,
     nomId,
-    folder_id
+    folder_id,
   } = req.body;
 
   try {
@@ -198,8 +200,6 @@ const updateNoticeOfMeeting = async (req, res) => {
       } else {
         update[0].files = uploadedFiles;
       }
-
-      console.log(update);
 
       res.status(200).json({ success: true, data: update });
     } else {
@@ -275,6 +275,7 @@ const updateMinutesOfMeeting = async (req, res) => {
     nomId,
     place_of_meeting,
     quorum,
+    folder_id
   } = req.body;
 
   try {
@@ -285,6 +286,7 @@ const updateMinutesOfMeeting = async (req, res) => {
       status: status,
       quorum: quorum,
       placeOfMeeting: place_of_meeting,
+      folder_id: folder_id,
     };
     let update = await db("noticeOfMeeting")
       .update(toUpdate)
@@ -297,6 +299,7 @@ const updateMinutesOfMeeting = async (req, res) => {
         "status",
         "quorum",
         "placeOfMeeting",
+        "folder_id"
       ]);
 
     if (update.length >= 1) {
