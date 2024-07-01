@@ -1,3 +1,4 @@
+import moment from "moment/moment.js";
 import db from "../database/db.js";
 
 const getAllRecords = async (req, res) => {
@@ -77,11 +78,12 @@ const createRecord = async (req, res) => {
       //company details
       let company = companies[0];
 
+
       //record name
-      let recordName = `${draftingInput.corporate_name} GIS ${draftingInput.year}`;
+      let recordName = `${draftingInput.corporate_name} ${draftingInput.year} ${moment().format("MMDDYYYY")}`;
 
       if (draftingInput.corporate_name === "" || draftingInput.year === "") {
-        recordName = `${company.companyName} GIS ${new Date().getFullYear()}`;
+        recordName = `${company.companyName} ${new Date().getFullYear()} ${moment().format("MMDDYYYY")}`;
       }
 
       //Create an object
@@ -172,8 +174,8 @@ const updateRecord = async (req, res) => {
     pdfFileLink,
     secFileLink,
     createdBy,
+    folder_id,
   } = req.body;
-
 
   try {
     let toUpdate = {
@@ -182,23 +184,26 @@ const updateRecord = async (req, res) => {
       draftingInput: JSON.stringify(draftingInput),
       pdfFileLink: pdfFileLink,
       secFileLink: secFileLink,
+      folder_id: folder_id,
       createdBy: createdBy,
     };
 
     const data = await db("records")
       .where("recordId", recordId)
-      .update(toUpdate).returning([
+      .update(toUpdate)
+      .returning([
         "recordId",
         "recordName",
         "draftingInput",
         "pdfFileLink",
         "secFileLink",
+        "folder_id",
         "createdBy",
       ]);
 
     if (data.length > 0) {
       res.status(200).send(toUpdate);
-    }else{
+    } else {
       res.status(422).send("Failed to update the record");
     }
   } catch (e) {
@@ -207,7 +212,7 @@ const updateRecord = async (req, res) => {
   }
 };
 const deleteRecord = async (req, res) => {
-  const recordId = req.params.id;
+  const recordId = req.params.recordId;
 
   try {
     const data = await db("records")
