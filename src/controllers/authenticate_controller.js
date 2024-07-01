@@ -30,9 +30,9 @@ const authCheck = async (req, res) => {
   // or original scopes requested.  You can do that with the `getTokenInfo` method.
   try {
     const tokenInfo = await oAuth2Client.getTokenInfo(access_token);
-    if (tokenInfo.exp < Date.now() / 1000) {
-      return res.status(401).json({ auth: false, message: "Token expired" });
-    }
+    // if (tokenInfo.exp < Date.now() / 1000) {
+    //   return res.status(401).json({ auth: false, message: "Token expired" });
+    // }
     const user = await db("users")
       .select("*")
       .where("users.email", tokenInfo.email);

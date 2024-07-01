@@ -12,6 +12,7 @@ exports.up = function (knex) {
       table.json("draftingInput").nullable();
       table.string("pdfFileLink").nullable();
       table.string("secFileLink").nullable();
+      table.string("folder_id").nullable();
       table.string("createdBy").nullable();
       table.timestamps(true, true);
     })
