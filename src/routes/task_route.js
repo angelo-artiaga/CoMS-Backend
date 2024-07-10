@@ -17,6 +17,6 @@ router
   .patch(updateTask)
   .delete(deleteTask);
 
-router.route("/assignee/:taskAssigneeId").get(getAllAssigneeTask);
+router.route("/tasks/:assignee").get(getAllAssigneeTask);
 
 export default router;
