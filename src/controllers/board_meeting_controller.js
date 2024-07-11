@@ -33,7 +33,8 @@ const getAllNoticeOfMeeting = async (req, res) => {
         { proposed_meeting_date: "proposedMeetingDate" },
         "status",
         "folder_id",
-        "created_at"
+        "created_at",
+        "others"
       )
       .select()
       .where("companyId", companyId)
@@ -66,6 +67,7 @@ const addNoticeOfMeeting = async (req, res) => {
     status,
     type_of_meeting,
     folder_id,
+    others,
   } = req.body;
 
   const companyId = req.params.companyId;
@@ -79,6 +81,7 @@ const addNoticeOfMeeting = async (req, res) => {
     placeOfMeeting: "",
     quorum: "",
     folder_id: folder_id,
+    others: others,
   };
 
   try {
@@ -94,6 +97,7 @@ const addNoticeOfMeeting = async (req, res) => {
         "placeOfMeeting",
         "quorum",
         "folder_id",
+        "others",
       ]);
 
     if (data.length > 0) {
@@ -142,6 +146,7 @@ const updateNoticeOfMeeting = async (req, res) => {
     type_of_meeting,
     nomId,
     folder_id,
+    others,
   } = req.body;
 
   try {
@@ -151,6 +156,7 @@ const updateNoticeOfMeeting = async (req, res) => {
       proposedMeetingDate: proposed_meeting_date,
       status: status,
       folder_id: folder_id,
+      others: others,
     };
 
     let update = await db("noticeOfMeeting")
@@ -163,6 +169,7 @@ const updateNoticeOfMeeting = async (req, res) => {
         "proposedMeetingDate",
         "status",
         "folder_id",
+        "others",
       ]);
 
     if (update.length >= 1) {
@@ -275,7 +282,7 @@ const updateMinutesOfMeeting = async (req, res) => {
     nomId,
     place_of_meeting,
     quorum,
-    folder_id
+    folder_id,
   } = req.body;
 
   try {
@@ -299,7 +306,7 @@ const updateMinutesOfMeeting = async (req, res) => {
         "status",
         "quorum",
         "placeOfMeeting",
-        "folder_id"
+        "folder_id",
       ]);
 
     if (update.length >= 1) {
