@@ -9,10 +9,12 @@ import {
   deleteRecord,
   getAllCompanyRecords,
   getCurrentDirectors,
+  getLatestGIS,
 } from "../controllers/recordControllers.js";
 
 router.route("/record").get(getAllRecords).post(createRecord);
 router.route("/record/current/:companyId").get(getCurrentDirectors);
+router.route("/record/currentGIS/:companyId").get(getLatestGIS);
 router.route("/record/company/:companyId").get(getAllCompanyRecords);
 router
   .route("/record/:recordId")

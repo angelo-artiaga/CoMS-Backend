@@ -228,6 +228,25 @@ const deleteRecord = async (req, res) => {
   }
 };
 
+const getLatestGIS = async (req, res) => {
+  const companyId = req.params.companyId;
+  try {
+    const data = await db("records")
+      .select("*")
+      .where("companyId", companyId)
+      .orderBy("created_at", "desc")
+      .limit(1);
+    if (data.length == 1) {
+      res.status(200).json(data[0].draftingInput);
+    } else {
+      res.status(200).json(data);
+    }
+  } catch (e) {
+    //returns 500 status code
+    res.status(500).json({ error: "Internal Server Error", err: e });
+  }
+};
+
 export {
   getAllRecords,
   getAllCompanyRecords,
@@ -236,4 +255,5 @@ export {
   createRecord,
   updateRecord,
   deleteRecord,
+  getLatestGIS
 };
