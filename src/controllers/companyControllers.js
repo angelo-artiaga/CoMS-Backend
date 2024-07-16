@@ -29,6 +29,51 @@ const getAllCompany = async (req, res) => {
   }
 };
 
+const getPaginateCompany = async (req, res) => {
+  const { limit = 10, page = 1 } = req.query;
+  const parsedLimit = parseInt(limit); // Ensure limit is a number
+  const parsedPage = parseInt(page); // Ensure page is a number
+
+  const offset = (parsedPage - 1) * parsedLimit; // Calculate offset based on page number
+
+  try {
+    let data = await db("companies")
+      .select("*")
+      .limit(parsedLimit)
+      .offset(offset)
+      .orderBy("created_at", "asc");
+
+    const totalCount = (await db("companies").count("* as count"))[0].count;
+    const totalPages = Math.ceil(totalCount / parsedLimit);
+
+    let nextPage = null;
+    let prevPage = null;
+
+    if (parsedPage < totalPages) {
+      nextPage = `/paginateCompany?page=${parsedPage + 1}&limit=${parsedLimit}`;
+    }
+
+    if (parsedPage > 1) {
+      prevPage = `/paginateCompany?page=${parsedPage - 1}&limit=${parsedLimit}`;
+    }
+
+    let pagination = {
+      currentPage: parsedPage,
+      totalPages,
+      totalCount,
+      limit: parsedLimit,
+      offset,
+      nextPage,
+      prevPage,
+    };
+
+    res.status(200).json({ data, pagination });
+  } catch (e) {
+    console.error("Error fetching companies:", e);
+    res.status(500).json({ error: "Failed to fetch companies" });
+  }
+};
+
 const createCompany = async (req, res) => {
   const {
     companyName,
@@ -216,7 +261,6 @@ const deleteCompany = async (req, res) => {
     const data = await db("companies").where("companyId", companyId).update({
       status: false,
     });
-    console.log(data);
     if (data) {
       res.sendStatus(200);
     }
@@ -227,6 +271,7 @@ const deleteCompany = async (req, res) => {
 
 export {
   getAllCompany,
+  getPaginateCompany,
   createCompany,
   getCompany,
   updateCompany,
