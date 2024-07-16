@@ -8,12 +8,14 @@ import {
   updateCompany,
   deleteCompany,
   getCompany,
-  changeStatus
+  changeStatus,
+  getPaginateCompany
 } from "../controllers/companyControllers.js";
 
 
 // router.route("/company/").post(createCompany).get(getAllCompany);
 router.get("/company", getAllCompany);
+router.get("/paginateCompany", getPaginateCompany);
 router.post("/company", uploadMulter.single("logo"), createCompany);
 router.patch("/company/:id", uploadMulter.single("logo"), updateCompany);
 router.patch("/company/:id/changeStatus", changeStatus);
