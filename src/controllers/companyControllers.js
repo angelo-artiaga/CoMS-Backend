@@ -20,6 +20,30 @@ const uploadImage = async (imagePath, company_name) => {
   }
 };
 
+const uploadImageBase64 = (image, fileName) => {
+  //imgage = > base64
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(
+      image,
+      {
+        overwrite: true,
+        invalidate: true,
+        resource_type: "auto",
+        folder: "CoMS/Companies/letterheaders",
+        public_id: fileName,
+      },
+      (error, result) => {
+        if (result && result.secure_url) {
+          console.log(result.secure_url);
+          return resolve(result.secure_url);
+        }
+        console.log(error.message);
+        return reject({ message: error.message });
+      }
+    );
+  });
+};
+
 const getAllCompany = async (req, res) => {
   try {
     const data = await db("companies").select("*").orderBy("created_at", "asc");
@@ -236,6 +260,30 @@ const updateCompany = async (req, res) => {
   }
 };
 
+const updateLetterHeader = async (req, res) => {
+  const companyId = req.params.id;
+  const { letterHeader, companyName } = req.body;
+  try {
+    let upload = await uploadImageBase64(letterHeader, companyName);
+    if (upload != null) {
+      const data = await db("companies")
+        .where("companyId", companyId)
+        .update({
+          letterHeader: upload,
+        })
+        .returning(["letterHeader"]);
+      if (data.length > 0) {
+        res.status(200).json(data[0]);
+      } else {
+        res.status(422).send("Failed to update the record");
+      }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ response: "ERROR!" });
+  }
+};
+
 const changeStatus = async (req, res) => {
   // const companyId = req.params.companyId;
   const { companyId, status } = req.body;
@@ -277,4 +325,5 @@ export {
   updateCompany,
   deleteCompany,
   changeStatus,
+  updateLetterHeader,
 };
