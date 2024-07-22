@@ -6,6 +6,7 @@ import {
   updateTask,
   deleteTask,
   getAllAssigneeTask,
+  getAllCompanyTask,
 } from "../controllers/task_controller.js";
 import sendMessageMiddleware from "../middleware/sendMessageMiddleware.js";
 import createBlocks from "../slack-block/createBlocks.js";
@@ -14,7 +15,7 @@ const router = express.Router();
 
 router
   .route("/task/:companyId")
-  .get(getAllTask)
+  .get(getAllCompanyTask)
   .post(sendMessageMiddleware(createBlocks), createTask);
 router
   .route("/task/:companyId/:id")
@@ -23,5 +24,7 @@ router
   .delete(deleteTask);
 
 router.route("/tasks/:assignee").get(getAllAssigneeTask);
+router.route("/tasks").get(getAllTask);
+
 
 export default router;
