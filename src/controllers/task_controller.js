@@ -1,5 +1,34 @@
 import db from "../database/db.js";
 
+const getAllTask = async (req, res) => {
+  try {
+    const tasks = await db("tasks")
+      .select("tasks.*", "companies.companyName")
+      .join("companies", "tasks.companyId", "companies.companyId");
+
+    let appendUserDetails = await Promise.all(
+      tasks.map(async (task) => {
+        let users = await Promise.all(
+          task.assignee.map(async (slackId) => {
+            let user = await db("users").select("*").where("slackId", slackId);
+            return user[0];
+          })
+        );
+        task.assigneeDetails = users;
+        return task;
+      })
+    );
+
+    if (appendUserDetails.length > 0) {
+      res.status(200).json(appendUserDetails);
+    } else {
+      res.status(404).json({ message: "No tasks found for this assignee" });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const getAllAssigneeTask = async (req, res) => {
   try {
     const { assignee } = req.params;
@@ -31,7 +60,7 @@ const getTask = async (req, res) => {
   }
 };
 
-const getAllTask = async (req, res) => {
+const getAllCompanyTask = async (req, res) => {
   try {
     const { companyId } = req.params;
     const tasks = await db("tasks")
@@ -133,8 +162,9 @@ const deleteTask = async (req, res) => {
 };
 
 export {
-  getTask,
   getAllTask,
+  getTask,
+  getAllCompanyTask,
   updateTask,
   createTask,
   deleteTask,
