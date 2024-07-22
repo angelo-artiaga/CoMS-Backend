@@ -38,7 +38,29 @@ const getAllTask = async (req, res) => {
       .select("*")
       .where({ companyId })
       .orderBy("created_at", "desc");
-    res.status(200).json(tasks);
+
+    const tasksWithAssigneeNames = await Promise.all(
+      tasks.map(async (task) => {
+        const assigneeNames = await Promise.all(
+          task.assignee.map(async (assigneeId) => {
+            const user = await db("users")
+              .select("first_name", "last_name") // Adjust field names as necessary
+              .where("slackId", assigneeId)
+              .first();
+
+            if (!user) {
+              throw new Error(`User with slackId ${assigneeId} not found`);
+            }
+
+            return `${user.first_name} ${user.last_name}`; // Combine first and last name
+          })
+        );
+
+        return { ...task, assigneeNames };
+      })
+    );
+
+    res.status(200).json({ tasks: tasksWithAssigneeNames });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
