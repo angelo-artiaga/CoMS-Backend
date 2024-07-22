@@ -117,6 +117,29 @@ const getUser = async (req, res) => {
   }
 };
 
+const getUserBySlackId = async (req, res) => {
+  const { slackId } = req.params; // Extracting the user ID from the request parameters
+
+  try {
+    // Fetch the user details by ID
+    const user = await db("users")
+      .select("*")
+      .where("slackId", slackId)
+      .first();
+
+    if (!user) {
+      // If no user is found, return a 404 status with a message
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Return the user object with roles
+    res.status(200).json(user);
+  } catch (error) {
+    // Handle any errors that occur during the database operations
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const updateUser = async (req, res) => {
   const { user_id } = req.params;
   const { status, role } = req.body;
@@ -160,5 +183,6 @@ export {
   deleteProfile,
   getAllUsers,
   getUser,
+  getUserBySlackId,
   updateUser,
 };
