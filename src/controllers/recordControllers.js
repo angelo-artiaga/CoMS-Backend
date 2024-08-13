@@ -78,12 +78,15 @@ const createRecord = async (req, res) => {
       //company details
       let company = companies[0];
 
-
       //record name
-      let recordName = `${draftingInput.corporate_name} ${draftingInput.year} ${moment().format("MMDDYYYY")}`;
+      let recordName = `${draftingInput.corporate_name} ${
+        draftingInput.year
+      } ${moment().format("MMDDYYYY")}`;
 
       if (draftingInput.corporate_name === "" || draftingInput.year === "") {
-        recordName = `${company.companyName} ${new Date().getFullYear()} ${moment().format("MMDDYYYY")}`;
+        recordName = `${
+          company.companyName
+        } ${new Date().getFullYear()} ${moment().format("MMDDYYYY")}`;
       }
 
       //Create an object
@@ -255,5 +258,5 @@ export {
   createRecord,
   updateRecord,
   deleteRecord,
-  getLatestGIS
+  getLatestGIS,
 };
