@@ -46,8 +46,19 @@ const uploadImageBase64 = (image, fileName) => {
 
 const getAllCompany = async (req, res) => {
   try {
-    const data = await db("companies").select("*").orderBy("created_at", "asc");
-    res.status(200).json(data);
+    const companies = await db("companies")
+      .select("*")
+      .orderBy("created_at", "asc");
+
+    const companies_with_individuals = await Promise.all(
+      companies.map(async (company) => {
+        let individuals = await db("individuals")
+          .select("*")
+          .where("companyId", company.companyId);
+        return { ...company, individuals };
+      })
+    );
+    res.status(200).json(companies_with_individuals);
   } catch (e) {
     res.status(500).json({ response: "ERROR!" });
   }
@@ -158,7 +169,13 @@ const getCompany = async (req, res) => {
     const data = await db("companies")
       .select("*")
       .where("companyId", companyId);
+
     if (data.length == 1) {
+      let individuals = await db("individuals")
+        .select("*")
+        .where("companyId", data[0].companyId);
+
+      data[0].listOfIndividuals = individuals;
       res.status(200).json(data);
     } else {
       res.status(404).json({ error: `Company ID: ${companyId} is not found.` });
