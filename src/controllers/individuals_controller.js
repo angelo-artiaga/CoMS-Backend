@@ -81,7 +81,7 @@ class Individuals {
         key !== "individuals_id" &&
         instance[key] !== null
       ) {
-        updates[key] = instance[key] === "" ? null : instance[key];
+        updates[key] = instance[key] === "" ? "" : instance[key];
       }
     }
     return updates;
