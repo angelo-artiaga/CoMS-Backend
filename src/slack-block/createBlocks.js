@@ -5,15 +5,6 @@ const createBlocks = (data) => {
       ? data.assignee.map((assignee) => `*<${assignee}>*`).join(", ")
       : "*No assignees*";
 
-  // companyId,
-  //   taskDescription,
-  //   targetDate,
-  //   status,
-  //   remarks,
-  //   serviceAgreement,
-  //   serviceAgreementFileLink,
-  //   assignee,
-
   return [
     {
       type: "image",
