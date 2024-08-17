@@ -15,8 +15,9 @@ const router = express.Router();
 
 router
   .route("/task/:companyId")
-  .get(getAllCompanyTask)
-  .post(sendMessageMiddleware(createBlocks), createTask);
+  .get(getAllTask)
+  //.post(sendMessageMiddleware(createBlocks), createTask);
+  .post(createTask);
 router
   .route("/task/:companyId/:id")
   .get(getTask)
@@ -25,6 +26,5 @@ router
 
 router.route("/tasks/:assignee").get(getAllAssigneeTask);
 router.route("/tasks").get(getAllTask);
-
 
 export default router;
