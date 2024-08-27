@@ -51,22 +51,16 @@ const createRecord = async (req, res) => {
   const {
     companyId,
     recordId,
-    // recordName,
+    recordName,
     status,
     draftingInput,
-
     createdBy,
+    folder_id,
+    // gdrivefolders,
+    date_filed,
   } = req.body;
 
   try {
-    // let toInsert = {
-    //   companyId: companyId,
-    //   recordName: recordName,
-    //   status: status,
-    //   draftingInput: JSON.stringify(draftingInput),
-    //   createdBy: createdBy,
-    // };
-
     //check company if exist
     const companies = await db("companies")
       .select("*")
@@ -78,64 +72,67 @@ const createRecord = async (req, res) => {
       //company details
       let company = companies[0];
 
-      //record name
-      let recordName = `${draftingInput.corporate_name} ${
-        draftingInput.year
-      } ${moment().format("MMDDYYYY")}`;
+      let newRecordName = recordName;
 
-      if (draftingInput.corporate_name === "" || draftingInput.year === "") {
-        recordName = `${
-          company.companyName
-        } ${new Date().getFullYear()} ${moment().format("MMDDYYYY")}`;
+      //record name
+      if (newRecordName == "") {
+        newRecordName = `${draftingInput.corporate_name} ${
+          draftingInput.year
+        } ${moment().format("MMDDYYYY")}`;
+
+        if (draftingInput.corporate_name === "" || draftingInput.year === "") {
+          newRecordName = `${
+            company.companyName
+          } ${new Date().getFullYear()} ${moment().format("MMDDYYYY")}`;
+        }
       }
 
       //Create an object
-      let record = {
+      let record_object = {
         companyId: company.companyId,
-        recordName: recordName,
+        recordName: newRecordName,
         status: status,
         draftingInput: JSON.stringify(draftingInput),
         // pdfInput: JSON.stringify(pdfInput),
         // pdfFileLink: pdfFileLink,
         // secFileLink: secFileLink,
+        folder_id: folder_id,
+        // gdrivefolders: JSON.stringify(gdrivefolders),
+        date_filed: date_filed,
         createdBy: createdBy,
       };
 
-      // //Checks the status then append the user input based on its status
-      // if (status == "Saved as Draft") {
-      //   record.draftingInput = JSON.stringify(draftingInput);
-      // }
-
-      // //Checks the status then append the user input based on its status
-      // if (status == "Pending for Approval") {
-      //   record.pdfInput = JSON.stringify(pdfInput);
-      // }
-
-      if (recordId !== "") {
+      if (recordId != "") {
         //Update if the record is existing.
 
-        //insert query to add record object in db
-        let update = await db("records")
-          .where("recordId", recordId)
-          .update(record);
+        let record = await db("records").where("recordId", recordId).first();
 
-        //checks if the data or the query was inserted
-        if (update) {
-          res.status(200).json(record);
+        if (record) {
+          //update query to add record object in db
+          let update = await db("records")
+            .where("recordId", recordId)
+            .update(record_object);
+
+          //checks if the data or the query was updated
+          if (update) {
+            res.status(200).json(record_object);
+          } else {
+            res
+              .status(500)
+              .send({ error: `Failed to update the record in the database.` });
+          }
         } else {
           res
-            .status(500)
-            .send({ error: `Failed to insert the record in the database.` });
+            .status(404)
+            .json({ error: `Record ID: ${recordId} is not found.` });
         }
       } else {
         //else, insert the record.
-
         //insert query to add record object in db
-        let insert = await db("records").insert(record);
-
+        let insert = await db("records").insert(record_object);
         //checks if the data or the query was inserted
         if (insert) {
-          res.status(200).json(record);
+          res.status(200).json(record_object);
         } else {
           res
             .status(500)
@@ -156,9 +153,12 @@ const getRecord = async (req, res) => {
   const recordId = req.params.recordId;
 
   try {
-    const data = await db("records").select("*").where("recordId", recordId);
-    if (data.length >= 1) {
-      res.status(200).json(data);
+    const record = await db("records")
+      .select("*")
+      .where("recordId", recordId)
+      .first();
+    if (record) {
+      res.status(200).json(record);
     } else {
       res.status(404).json({ error: "Record ID does not exists." });
     }
@@ -178,6 +178,7 @@ const updateRecord = async (req, res) => {
     secFileLink,
     createdBy,
     folder_id,
+    // gdrivefolders,
   } = req.body;
 
   try {
@@ -189,6 +190,7 @@ const updateRecord = async (req, res) => {
       secFileLink: secFileLink,
       folder_id: folder_id,
       createdBy: createdBy,
+      // gdrivefolders: gdrivefolders,
     };
 
     const data = await db("records")
@@ -214,6 +216,7 @@ const updateRecord = async (req, res) => {
     res.json({ response: "ERROR!" });
   }
 };
+
 const deleteRecord = async (req, res) => {
   const recordId = req.params.recordId;
 
