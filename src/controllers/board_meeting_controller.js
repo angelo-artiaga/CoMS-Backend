@@ -1,6 +1,8 @@
 import { uploadImage } from "../utils/cloudinary.js";
 import db from "../database/db.js";
 
+// ### Notice of Meeting Controllers
+//#region
 const getNoticeOfMeeting = async (req, res) => {
   let status = 500;
   let data = {};
@@ -230,9 +232,10 @@ const deleteNoticeOfMeeting = async (req, res) => {
       .json({ success: false, error: "Internal Server Error", err: error });
   }
 };
+//#endregion
 
-//Minutes of meeting
-
+// ### Minutes of meeting Controllers
+//#region
 const getAllMinutesOfMeeting = async (req, res) => {
   const companyId = req.params.companyId;
   try {
@@ -271,7 +274,6 @@ const getAllMinutesOfMeeting = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error", err: e });
   }
 };
-
 const updateMinutesOfMeeting = async (req, res) => {
   const {
     files,
@@ -319,9 +321,10 @@ const updateMinutesOfMeeting = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error", err: error });
   }
 };
+//#endregion
 
-//Board Resolutions
-
+// ### Board Resolutions Controllers
+//#region
 const fetchAvailableBMDates = async (req, res) => {
   const companyId = req.params.companyId;
   try {
@@ -462,6 +465,98 @@ const deleteBoardResolution = async (req, res) => {
       .json({ success: false, error: "Internal Server Error", err: error });
   }
 };
+//#endregion
+
+// ### Secretary Certificate Controllers
+//#region
+const getSecretaryCertificate = async (req, res) => {
+  let status = 500;
+  let data = {};
+  try {
+    let secretaryCertificate = await db("seccert")
+      .select("*")
+      .where("seccert_id", req.params.seccert_id);
+    if (secretaryCertificate.length > 0) {
+      status = 200;
+      data.success = true;
+      data.result = secretaryCertificate;
+    }
+  } catch (error) {
+    status = 500;
+    data.success = false;
+    data.error = error;
+  } finally {
+    res.status(status).json(data);
+  }
+};
+
+const getAllSecretaryCertificate = async (req, res) => {
+  const companyId = req.params.companyId;
+  try {
+    const data = await db("seccert")
+      .select("*")
+      .where("companyId", companyId)
+      .orderBy("created_at", "desc");
+
+    if (data.length >= 0) {
+      res.status(200).json(data);
+    } else {
+      res.status(404).json({ error: "No Records Found." });
+    }
+  } catch (e) {
+    res.status(500).json({ error: "Internal Server Error", err: e });
+  }
+};
+
+const addSecretaryCertificate = async (req, res) => {
+  // const { gdrivefolder_id, type, details, status } = req.body;
+  const companyId = req.params.companyId;
+
+  try {
+    const data = await db("seccert")
+      .insert({ ...req.body, companyId })
+      .returning(["seccert_id"]);
+
+    if (data.length > 0) {
+      res.status(200).send({ success: true, data: data });
+    } else {
+      res.status(422).send("Failed to insert the record");
+    }
+  } catch (error) {
+    res.status(500).json(error);
+    console.log(error);
+  }
+};
+
+const updateSecretaryCertificate = async (req, res) => {
+  try {
+    let update = await db("seccert")
+      .update(req.body)
+      .where("seccert_id", req.body.seccert_id);
+
+    if (update >= 1) {
+      res.status(200).json({ success: true, data: update });
+    } else {
+      res.status(422).json("Failed to update the record");
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error", err: error });
+  }
+};
+
+const deleteSecretaryCertificate = async (req, res) => {
+  try {
+    let nom = await db("seccert")
+      .where("seccert_id", req.params.seccert_id)
+      .delete();
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, error: "Internal Server Error", err: error });
+  }
+};
+//#endregion
 
 export {
   getNoticeOfMeeting,
@@ -476,4 +571,9 @@ export {
   getAllBoardResolution,
   updateBoardResolution,
   deleteBoardResolution,
+  getSecretaryCertificate,
+  getAllSecretaryCertificate,
+  addSecretaryCertificate,
+  updateSecretaryCertificate,
+  deleteSecretaryCertificate,
 };
