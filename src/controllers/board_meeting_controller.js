@@ -1,8 +1,7 @@
 import { uploadImage } from "../utils/cloudinary.js";
 import db from "../database/db.js";
 
-// ### Notice of Meeting Controllers
-//#region
+//#region ### Notice of Meeting Controllers
 const getNoticeOfMeeting = async (req, res) => {
   let status = 500;
   let data = {};
@@ -234,8 +233,7 @@ const deleteNoticeOfMeeting = async (req, res) => {
 };
 //#endregion
 
-// ### Minutes of meeting Controllers
-//#region
+//#region ### Minutes of meeting Controllers
 const getAllMinutesOfMeeting = async (req, res) => {
   const companyId = req.params.companyId;
   try {
@@ -323,8 +321,7 @@ const updateMinutesOfMeeting = async (req, res) => {
 };
 //#endregion
 
-// ### Board Resolutions Controllers
-//#region
+//#region ### Board Resolutions Controllers
 const fetchAvailableBMDates = async (req, res) => {
   const companyId = req.params.companyId;
   try {
@@ -467,8 +464,7 @@ const deleteBoardResolution = async (req, res) => {
 };
 //#endregion
 
-// ### Secretary Certificate Controllers
-//#region
+//#region ### Secretary Certificate Controllers
 const getSecretaryCertificate = async (req, res) => {
   let status = 500;
   let data = {};
