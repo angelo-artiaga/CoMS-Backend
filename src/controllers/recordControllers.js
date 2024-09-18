@@ -2,11 +2,16 @@ import moment from "moment/moment.js";
 import db from "../database/db.js";
 
 const getAllRecords = async (req, res) => {
+  let { status = "" } = req.query;
+
   try {
-    const data = await db("records").select("*");
+    const data = await db("records")
+      .select("records.*", "companies.companyName")
+      .join("companies", "records.companyId", "companies.companyId")
+      .whereILike("records.status", `%${status}%`);
     res.status(200).json(data);
   } catch (e) {
-    res.json({ response: "ERROR!" });
+    res.json({ response: "ERROR!", error: e });
   }
 };
 
@@ -58,6 +63,7 @@ const createRecord = async (req, res) => {
     folder_id,
     // gdrivefolders,
     date_filed,
+    comments,
   } = req.body;
 
   try {
@@ -99,6 +105,7 @@ const createRecord = async (req, res) => {
         folder_id: folder_id,
         // gdrivefolders: JSON.stringify(gdrivefolders),
         date_filed: date_filed,
+        comments: comments,
         createdBy: createdBy,
       };
 
@@ -154,7 +161,8 @@ const getRecord = async (req, res) => {
 
   try {
     const record = await db("records")
-      .select("*")
+      .select("records.*", "companyName")
+      .join("companies", "records.companyId", "companies.companyId")
       .where("recordId", recordId)
       .first();
     if (record) {
@@ -178,6 +186,8 @@ const updateRecord = async (req, res) => {
     secFileLink,
     createdBy,
     folder_id,
+    date_filed,
+    comments,
     // gdrivefolders,
   } = req.body;
 
@@ -189,6 +199,8 @@ const updateRecord = async (req, res) => {
       pdfFileLink: pdfFileLink,
       secFileLink: secFileLink,
       folder_id: folder_id,
+      date_filed,
+      comments,
       createdBy: createdBy,
       // gdrivefolders: gdrivefolders,
     };
@@ -203,6 +215,7 @@ const updateRecord = async (req, res) => {
         "pdfFileLink",
         "secFileLink",
         "folder_id",
+        "date_filed",
         "createdBy",
       ]);
 
