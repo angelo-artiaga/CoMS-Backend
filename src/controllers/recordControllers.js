@@ -64,6 +64,7 @@ const createRecord = async (req, res) => {
     // gdrivefolders,
     date_filed,
     comments,
+    modified_by,
   } = req.body;
 
   try {
@@ -82,14 +83,14 @@ const createRecord = async (req, res) => {
 
       //record name
       if (newRecordName == "") {
-        newRecordName = `${draftingInput.corporate_name} ${
-          draftingInput.year
-        } ${moment().format("MMDDYYYY")}`;
+        let date_created = moment().format("MMDDYYYY");
+        let isAnnual = draftingInput.isSpecialMeeting ? "AMENDMENT" : "ANNUAL";
+        newRecordName = `${draftingInput.corporate_name} GIS ${draftingInput.year} ${isAnnual} ${date_created}`;
 
         if (draftingInput.corporate_name === "" || draftingInput.year === "") {
           newRecordName = `${
             company.companyName
-          } ${new Date().getFullYear()} ${moment().format("MMDDYYYY")}`;
+          } GIS ${new Date().getFullYear()} ${isAnnual} ${date_created}`;
         }
       }
 
@@ -107,6 +108,7 @@ const createRecord = async (req, res) => {
         date_filed: date_filed,
         comments: comments,
         createdBy: createdBy,
+        modified_by,
       };
 
       if (recordId != "") {
@@ -118,7 +120,7 @@ const createRecord = async (req, res) => {
           //update query to add record object in db
           let update = await db("records")
             .where("recordId", recordId)
-            .update(record_object);
+            .update({ ...record_object, updated_at: new Date().toISOString() });
 
           //checks if the data or the query was updated
           if (update) {
@@ -188,6 +190,7 @@ const updateRecord = async (req, res) => {
     folder_id,
     date_filed,
     comments,
+    modified_by,
     // gdrivefolders,
   } = req.body;
 
@@ -202,6 +205,8 @@ const updateRecord = async (req, res) => {
       date_filed,
       comments,
       createdBy: createdBy,
+      modified_by,
+      updated_at: new Date().toISOString(),
       // gdrivefolders: gdrivefolders,
     };
 
@@ -217,6 +222,8 @@ const updateRecord = async (req, res) => {
         "folder_id",
         "date_filed",
         "createdBy",
+        "modified_by",
+        "updated_at",
       ]);
 
     if (data.length > 0) {
