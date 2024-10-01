@@ -1,5 +1,6 @@
 import moment from "moment/moment.js";
 import db from "../database/db.js";
+import axios from "axios";
 
 const getAllRecords = async (req, res) => {
   let { status = "" } = req.query;
@@ -83,8 +84,10 @@ const createRecord = async (req, res) => {
 
       //record name
       if (newRecordName == "") {
-        let date_created = moment().format("MMDDYYYY");
-        let isAnnual = draftingInput.isSpecialMeeting ? "AMENDMENT" : "ANNUAL";
+        let date_created = moment(
+          draftingInput.actual_date_of_annual_meeting
+        ).format("MMDDYYYY");
+        let isAnnual = draftingInput.isSpecialMeeting ? "Amendment" : "";
         newRecordName = `${draftingInput.corporate_name} GIS ${draftingInput.year} ${isAnnual} ${date_created}`;
 
         if (draftingInput.corporate_name === "" || draftingInput.year === "") {
@@ -273,6 +276,25 @@ const getLatestGIS = async (req, res) => {
   }
 };
 
+const generateGIS = async (req, res) => {
+  let url =
+    "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbxZ1mYYAucZD_8U7ydWgMJz69tZR9mMD_xRy0fDuLhTofSBDTwnYszHOPOqbedpDfrP/exec";
+
+  try {
+    let response = await axios.get(url, {
+      params: {
+        recordId: req.query.recordId,
+      },
+    });
+
+    if (response.status === 200) {
+      res.send(response.data);
+    }
+  } catch (error) {
+    res.sendStatus(500);
+  }
+};
+
 export {
   getAllRecords,
   getAllCompanyRecords,
@@ -282,4 +304,5 @@ export {
   updateRecord,
   deleteRecord,
   getLatestGIS,
+  generateGIS,
 };
