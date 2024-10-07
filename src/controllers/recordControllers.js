@@ -9,7 +9,11 @@ const getAllRecords = async (req, res) => {
     const data = await db("records")
       .select("records.*", "companies.companyName")
       .join("companies", "records.companyId", "companies.companyId")
-      .whereILike("records.status", `%${status}%`);
+      .whereILike("records.status", `%${status}%`)
+      .orderBy([
+        { column: "recordName", order: "desc" }, // Order by the first column in ascending order
+        { column: "updated_at", order: "desc" }, // Order by the second column in descending order
+      ]);
     res.status(200).json(data);
   } catch (e) {
     res.json({ response: "ERROR!", error: e });
@@ -22,7 +26,10 @@ const getAllCompanyRecords = async (req, res) => {
     const data = await db("records")
       .select("*")
       .where("companyId", companyId)
-      .orderBy("created_at", "desc");
+      .orderBy([
+        { column: "recordName", order: "desc" }, // Order by the first column in ascending order
+        { column: "updated_at", order: "desc" }, // Order by the second column in descending order
+      ]);
     if (data.length >= 0) {
       res.status(200).json(data);
     } else {
@@ -40,9 +47,14 @@ const getCurrentDirectors = async (req, res) => {
     const data = await db("records")
       .select("*")
       .where("companyId", companyId)
-      .orderBy("created_at", "desc")
+      .where("status", "Completed")
+      .orderBy([
+        { column: "recordName", order: "desc" }, // Order by the first column in ascending order
+        { column: "date_filed", order: "desc" }, // Order by the second column in descending order
+      ])
       .limit(1);
-    if (data.length == 1) {
+
+    if (data.length > 0) {
       res.status(200).json(data[0].draftingInput.directors_or_officers);
     } else {
       res.status(200).json(data);
@@ -263,8 +275,15 @@ const getLatestGIS = async (req, res) => {
     const data = await db("records")
       .select("*")
       .where("companyId", companyId)
-      .orderBy("created_at", "desc")
+      .where("status", "Completed")
+      .orderBy([
+        { column: "recordName", order: "desc" }, // Order by the first column in ascending order
+        { column: "date_filed", order: "desc" }, // Order by the second column in descending order
+      ])
       .limit(1);
+    // .orderBy("date_filed", "desc")
+    // .limit(1);
+
     if (data.length == 1) {
       res.status(200).json(data[0].draftingInput);
     } else {
