@@ -13,6 +13,7 @@ import permission_route from "./routes/permissions_route.js";
 import task_route from "./routes/task_route.js";
 import workflow_route from "./routes/workflow_route.js";
 import individuals_route from "./routes/individuals_route.js";
+import main_dashboard_route from "./routes/main_dashboard_route.js";
 import db from "./database/db.js";
 import cors from "cors";
 import "./utils/auth.js";
@@ -62,6 +63,7 @@ app.use(permission_route);
 app.use(task_route);
 app.use(workflow_route);
 app.use(individuals_route);
+app.use(main_dashboard_route);
 app.get("/", (req, res) => {
   db("users")
     .select("*")
