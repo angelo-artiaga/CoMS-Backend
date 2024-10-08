@@ -296,8 +296,12 @@ const getLatestGIS = async (req, res) => {
 };
 
 const generateGIS = async (req, res) => {
-  let url =
+  let url_old =
     "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbxZ1mYYAucZD_8U7ydWgMJz69tZR9mMD_xRy0fDuLhTofSBDTwnYszHOPOqbedpDfrP/exec";
+
+  let url =
+    "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbzzuuNKPjS_V9MLCC0znutLLRybngsE6PbszREl5PYxeFD6CJ2LFGNobVWRWrZOUS2T/exec";
+
 
   try {
     let response = await axios.get(url, {
