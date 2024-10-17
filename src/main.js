@@ -47,6 +47,7 @@ app.use(
       process.env.LOCALHOST_CLIENT_URL,
       process.env.CLIENT_URL,
       "https://script.google.com",
+      "https://app.viascari.com"
     ],
     credentials: true,
   })
