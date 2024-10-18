@@ -215,6 +215,7 @@ export const deleteMC28Form = async (req, res) => {
 };
 
 export const generateDocument = async (req, res) => {
+  console.log("test");
   let url =
     "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbyS2gGq8wg-Sx0NOtpY-56iomuB0ZRiSUJ0DppZWv7gD7KYzFEULl4nmV_PTS_2m9my-w/exec";
 
