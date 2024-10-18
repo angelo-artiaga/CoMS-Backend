@@ -15,7 +15,6 @@ import workflow_route from "./routes/workflow_route.js";
 import individuals_route from "./routes/individuals_route.js";
 import main_dashboard_route from "./routes/main_dashboard_route.js";
 import mc28form_route from "./routes/mc28form_route.js";
-import document_drafting_route from "./routes/document_drafting_route.js";
 
 import db from "./database/db.js";
 import cors from "cors";
@@ -69,8 +68,6 @@ app.use(workflow_route);
 app.use(individuals_route);
 app.use(main_dashboard_route);
 app.use(mc28form_route);
-app.use(document_drafting_route);
-
 app.get("/", (req, res) => {
   db("users")
     .select("*")
