@@ -1,50 +1,52 @@
 import axios from "axios";
 import db from "../database/db.js";
-const MC28FormDataState = {
-  type: "New",
-  corporate_name: "",
-  sec_registration_number: "",
-  official_email_address: "",
-  official_mobile_number: "",
-  alternative_email_address: "",
-  alternative_mobile_number: "",
+import moment from "moment";
 
-  old_email1: "",
-  new_email1: "",
-  is_official_email1: false,
-  is_alternate_email1: false,
-  old_email2: "",
-  new_email2: "",
-  is_official_email2: false,
-  is_alternate_email2: false,
-  old_phone_number1: "",
-  new_phone_number1: "",
-  is_official_phone_number1: false,
-  is_alternate_phone_number1: false,
-  old_phone_number2: "",
-  new_phone_number2: "",
-  is_official_phone_number2: false,
-  is_alternate_phone_number2: false,
+//#region CONSTANTS
 
-  auth_name: "",
-  office_address: "",
-  date_of_resolution: "",
+const TABLE_NAME = "documents";
+
+const appointeeState = {
+  name: "",
+  id_no: "",
+  date_place_issued: "",
 };
 
-class MC28FormClass {
+const DocumentDraftingState = {
+  type: "Certificate of Gross Sales/Receipts",
+  corporate_name: "",
+  office_address: "",
+  total_revenue: "",
+  date_from: "",
+  date_to: "",
+  year: "",
+  revenue_q1: "",
+  revenue_q2: "",
+  revenue_q3: "",
+  revenue_q4: "",
+  officer_name: "",
+  officer_position: "",
+  officer_nationality: "",
+  appointees: [appointeeState],
+};
+
+//#endregion
+
+//#region CLASS
+class DocumentDraftingClass {
   constructor({
-    form_id = "",
+    document_id = "",
     company_id = "",
     form_name = "",
     status = "",
-    form_data = MC28FormDataState,
+    form_data = DocumentDraftingState,
     folder_id = "",
     created_by = "",
     modified_by = "",
     created_at = "",
     updated_at = "",
   } = {}) {
-    this.form_id = form_id;
+    this.document_id = document_id;
     this.company_id = company_id;
     this.form_name = form_name;
     this.status = status;
@@ -58,24 +60,24 @@ class MC28FormClass {
 
   // Fetch all records
   static async fetchAll() {
-    return await db("mc28forms").select("*");
+    return await db(TABLE_NAME).select("*");
   }
 
-  // Fetch a record by ID
+  // Fetch records by Company ID
   static async fetchAllPerCompany(company_id) {
-    return await db("mc28forms").where({ company_id });
+    return await db(TABLE_NAME).where({ company_id });
   }
 
   // Fetch a record by ID
-  static async fetch(form_id) {
-    return await db("mc28forms").where({ form_id }).first();
+  static async fetch(document_id) {
+    return await db(TABLE_NAME).where({ document_id }).first();
   }
 
   // Add a new record
   async add() {
     // Exclude the `individuals_id`, `created_at`,`updated_at` from the insert data
-    const { form_id, created_at, updated_at, ...dataToInsert } = this;
-    return await db("mc28forms")
+    const { document_id, created_at, updated_at, ...dataToInsert } = this;
+    return await db(TABLE_NAME)
       .insert(dataToInsert)
       .returning(Object.keys(this));
   }
@@ -86,8 +88,8 @@ class MC28FormClass {
     const { created_at, updated_at, ...dataToUpdate } = this;
     const fieldsToUpdate = MC28FormClass.getUpdateFields(dataToUpdate);
     if (Object.keys(fieldsToUpdate).length > 0) {
-      return await db("mc28forms")
-        .where({ form_id: this.form_id })
+      return await db(TABLE_NAME)
+        .where({ document_id: this.document_id })
         .update(fieldsToUpdate)
         .returning(Object.keys(this));
     }
@@ -95,8 +97,8 @@ class MC28FormClass {
   }
 
   // Delete a record by ID
-  static async delete(form_id) {
-    return await db("mc28forms").where({ form_id }).del();
+  static async delete(document_id) {
+    return await db(TABLE_NAME).where({ document_id }).del();
   }
 
   // Static method to prepare fields for updates
@@ -105,7 +107,7 @@ class MC28FormClass {
     for (const key in instance) {
       if (
         instance[key] !== undefined &&
-        key !== "individuals_id" &&
+        key !== "document_id" &&
         instance[key] !== null
       ) {
         updates[key] = instance[key] === "" ? "" : instance[key];
@@ -114,12 +116,15 @@ class MC28FormClass {
     return updates;
   }
 }
+//#endregion
 
-export const getAllMC28Forms = async (req, res) => {
+//#region FUNCTIONS
+
+export const getAllDocumentDrafts = async (req, res) => {
   try {
-    const mc28forms = await MC28FormClass.fetchAll();
-    if (mc28forms) {
-      res.json(mc28forms);
+    const records = await DocumentDraftingClass.fetchAll();
+    if (records) {
+      res.json(records);
     } else {
       res.status(404).send("Record not found");
     }
@@ -128,13 +133,13 @@ export const getAllMC28Forms = async (req, res) => {
   }
 };
 
-export const getMC28FormsPerCompany = async (req, res) => {
+export const getDocumentDraftsPerCompany = async (req, res) => {
   const { company_id } = req.params; // Extracting the Company ID from the request parameters
 
   try {
-    const mc28forms = await MC28FormClass.fetchAllPerCompany(company_id);
-    if (mc28forms) {
-      res.json(mc28forms);
+    const records = await DocumentDraftingClass.fetchAllPerCompany(company_id);
+    if (records) {
+      res.json(records);
     } else {
       res.status(404).send("Record not found");
     }
@@ -143,13 +148,13 @@ export const getMC28FormsPerCompany = async (req, res) => {
   }
 };
 
-export const getMC28Form = async (req, res) => {
-  const { company_id, form_id } = req.params; // Extracting the user ID from the request parameters
+export const getDocumentDraft = async (req, res) => {
+  const { company_id, document_id } = req.params; // Extracting the user ID from the request parameters
 
   try {
-    const mc28forms = await MC28FormClass.fetch(form_id);
-    if (mc28forms) {
-      res.json(mc28forms);
+    const record = await DocumentDraftingClass.fetch(document_id);
+    if (record) {
+      res.json(record);
     } else {
       res.status(404).send("Record not found");
     }
@@ -158,43 +163,41 @@ export const getMC28Form = async (req, res) => {
   }
 };
 
-export const addMC28Form = async (req, res) => {
+export const addDocumentDraft = async (req, res) => {
   const { company_id } = req.params;
 
   const data = req.body;
 
-  let form_name = `${data.form_data.corporate_name} MC28 Form Annex ${
-    data.form_data.type == "New" ? "D" : "G"
-  } ${new Date().getFullYear()}`;
+  let form_name = `${data.form_data.type} ${moment().format("MMDDYYYYhhmmssA")}`;
 
   let body = { ...req.body };
 
   body.form_name = form_name;
 
   try {
-    const individual = new MC28FormClass({
+    const record = new DocumentDraftingClass({
       ...body,
       company_id: company_id,
     });
-    let response = await individual.add();
+    let response = await record.add();
     res.status(201).json(response[0]);
   } catch (error) {
     res.status(500).send("Server error");
   }
 };
 
-export const updateMC28Form = async (req, res) => {
-  const { company_id, form_id } = req.params;
+export const updateDocumentDrafts = async (req, res) => {
+  const { company_id, document_id } = req.params;
   try {
-    const existingIndividual = await MC28FormClass.fetch(form_id);
+    const existingRecord = await DocumentDraftingClass.fetch(document_id);
 
-    if (existingIndividual) {
-      const updatedIndividual = new MC28FormClass({
-        ...existingIndividual,
+    if (existingRecord) {
+      const updatedRecord = new DocumentDraftingClass({
+        ...existingRecord,
         ...req.body,
-        form_id: form_id,
+        document_id: document_id,
       });
-      let response = await updatedIndividual.update();
+      let response = await updatedRecord.update();
       res.json(response[0]);
     } else {
       res.status(404).send("Record not found");
@@ -204,10 +207,10 @@ export const updateMC28Form = async (req, res) => {
   }
 };
 
-export const deleteMC28Form = async (req, res) => {
-  const { form_id } = req.params;
+export const deleteDocumentDrafts = async (req, res) => {
+  const { document_id } = req.params;
   try {
-    await MC28FormClass.delete(form_id);
+    await DocumentDraftingClass.delete(document_id);
     res.status(204).send(); // No content
   } catch (error) {
     res.status(500).send("Server error");
@@ -233,3 +236,5 @@ export const generateDocument = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+//#endregion
