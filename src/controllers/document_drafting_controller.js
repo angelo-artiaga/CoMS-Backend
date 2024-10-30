@@ -168,7 +168,9 @@ export const addDocumentDraft = async (req, res) => {
 
   const data = req.body;
 
-  let form_name = `${data.form_data.type} ${moment().format("MMDDYYYYhhmmssA")}`;
+  let form_name = `${data.form_data.type} ${moment().format(
+    "MMDDYYYYhhmmssA"
+  )}`;
 
   let body = { ...req.body };
 
@@ -224,7 +226,8 @@ export const generateDocument = async (req, res) => {
   try {
     let response = await axios.get(url, {
       params: {
-        formData: req.query.formData,
+        company_id: req.query.company_id,
+        document_id: req.query.document_id,
       },
     });
 
