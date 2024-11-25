@@ -11,6 +11,7 @@ import finaldocs_route from "./routes/finaldocs_routes.js";
 import roles_route from "./routes/roles_route.js";
 import permission_route from "./routes/permissions_route.js";
 import task_route from "./routes/task_route.js";
+import business_renewal_routes from "./routes/business_renewal_routes.js";
 import workflow_route from "./routes/workflow_route.js";
 import individuals_route from "./routes/individuals_route.js";
 import main_dashboard_route from "./routes/main_dashboard_route.js";
@@ -48,7 +49,7 @@ app.use(
       process.env.LOCALHOST_CLIENT_URL,
       process.env.CLIENT_URL,
       "https://script.google.com",
-      "https://app.viascari.com"
+      "https://app.viascari.com",
     ],
     credentials: true,
   })
@@ -70,6 +71,7 @@ app.use(individuals_route);
 app.use(main_dashboard_route);
 app.use(mc28form_route);
 app.use(document_drafting_route);
+app.use(business_renewal_routes);
 
 app.get("/", (req, res) => {
   db("users")
