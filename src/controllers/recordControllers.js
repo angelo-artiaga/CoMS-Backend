@@ -6,7 +6,7 @@ const getAllRecords = async (req, res) => {
   let { status = "" } = req.query;
 
   try {
-    const data = await db("records")
+    let data = await db("records")
       .select("records.*", "companies.companyName")
       .join("companies", "records.companyId", "companies.companyId")
       .whereILike("records.status", `%${status}%`)
@@ -14,7 +14,33 @@ const getAllRecords = async (req, res) => {
         { column: "recordName", order: "desc" }, // Order by the first column in ascending order
         { column: "updated_at", order: "desc" }, // Order by the second column in descending order
       ]);
-    res.status(200).json(data);
+
+    const newData = await Promise.all(
+      data.map(async (record) => {
+        record.timestamps = await db("gis_timestamps")
+          .select("*")
+          .where("recordId", record.recordId)
+          .orderBy([
+            { column: "datetime", order: "desc" }, // Order by the second column in descending order
+          ]);
+
+        return record;
+      })
+    );
+
+    const newDataWithTimestamp = newData.filter((new_data) => {
+      if (new_data.timestamps.length != 0) {
+        if (new_data.timestamps[0].status == "Pending for Approval") {
+          return true;
+        }
+      } else {
+        return true;
+      }
+
+      return false;
+    });
+
+    res.status(200).json(newDataWithTimestamp);
   } catch (e) {
     res.json({ response: "ERROR!", error: e });
   }
@@ -30,8 +56,22 @@ const getAllCompanyRecords = async (req, res) => {
         { column: "recordName", order: "desc" }, // Order by the first column in ascending order
         { column: "updated_at", order: "desc" }, // Order by the second column in descending order
       ]);
+
     if (data.length >= 0) {
-      res.status(200).json(data);
+      const newData = await Promise.all(
+        data.map(async (record) => {
+          record.timestamps = await db("gis_timestamps")
+            .select("*")
+            .where("recordId", record.recordId)
+            .orderBy([
+              { column: "datetime", order: "desc" }, // Order by the second column in descending order
+            ]);
+
+          return record;
+        })
+      );
+
+      res.status(200).json(newData);
     } else {
       res.status(404).json({ error: "No Records Found." });
     }
@@ -139,7 +179,22 @@ const createRecord = async (req, res) => {
 
           //checks if the data or the query was updated
           if (update) {
-            res.status(200).json(record_object);
+            const timestamp_object = {
+              recordId: recordId,
+              status: record_object.status,
+              remarks: "",
+              modified_by: record_object.modified_by,
+              datetime: new Date(),
+            };
+
+            //insert timestamp
+            let insertTimestamp = await db("gis_timestamps").insert(
+              timestamp_object
+            );
+
+            if (insertTimestamp) {
+              res.status(200).json(record_object);
+            }
           } else {
             res
               .status(500)
@@ -153,10 +208,27 @@ const createRecord = async (req, res) => {
       } else {
         //else, insert the record.
         //insert query to add record object in db
-        let insert = await db("records").insert(record_object);
+        let insert = await db("records")
+          .insert(record_object)
+          .returning("recordId");
         //checks if the data or the query was inserted
         if (insert) {
-          res.status(200).json(record_object);
+          const timestamp_object = {
+            recordId: insert[0].recordId,
+            status: record_object.status,
+            remarks: "",
+            modified_by: record_object.modified_by,
+            datetime: new Date(),
+          };
+
+          //insert timestamp
+          let insertTimestamp = await db("gis_timestamps").insert(
+            timestamp_object
+          );
+
+          if (insertTimestamp) {
+            res.status(200).json(record_object);
+          }
         } else {
           res
             .status(500)
@@ -183,6 +255,13 @@ const getRecord = async (req, res) => {
       .where("recordId", recordId)
       .first();
     if (record) {
+      record.timestamps = await db("gis_timestamps")
+        .select("*")
+        .where("recordId", record.recordId)
+        .orderBy([
+          { column: "datetime", order: "desc" }, // Order by the second column in descending order
+        ]);
+
       res.status(200).json(record);
     } else {
       res.status(404).json({ error: "Record ID does not exists." });
@@ -242,7 +321,26 @@ const updateRecord = async (req, res) => {
       ]);
 
     if (data.length > 0) {
-      res.status(200).send(toUpdate);
+      if (status == "" || status == null || status == undefined) {
+        res.status(200).send(toUpdate);
+      } else {
+        const timestamp_object = {
+          recordId: data[0].recordId,
+          status: toUpdate.status,
+          remarks: toUpdate.comments,
+          modified_by: toUpdate.modified_by,
+          datetime: new Date(),
+        };
+
+        //insert timestamp
+        let insertTimestamp = await db("gis_timestamps").insert(
+          timestamp_object
+        );
+
+        if (insertTimestamp) {
+          res.status(200).send(toUpdate);
+        }
+      }
     } else {
       res.status(422).send("Failed to update the record");
     }
@@ -256,6 +354,14 @@ const deleteRecord = async (req, res) => {
   const recordId = req.params.recordId;
 
   try {
+    const timestamps = await db("gis_timestamps")
+      .select("*")
+      .where("recordId", recordId);
+
+    if (timestamps.length > 0) {
+      await db("gis_timestamps").where("recordId", recordId).delete();
+    }
+
     const data = await db("records")
       .where("recordId", recordId)
       .del(["recordId"], { includeTriggerModifications: true });
