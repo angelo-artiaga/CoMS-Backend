@@ -4,6 +4,7 @@ import {
   addDocumentDraft,
   deleteDocumentDrafts,
   generateDocument,
+  generateQuotationDocument,
   getAllDocumentDrafts,
   getDocumentDraft,
   getDocumentDraftsPerCompany,
@@ -24,5 +25,8 @@ router
   .delete(deleteDocumentDrafts);
 
 router.route("/document-drafting-generate").get(generateDocument);
+router
+  .route("/document-drafting-quotation-generate")
+  .get(generateQuotationDocument);
 
 export default router;

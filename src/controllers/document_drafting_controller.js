@@ -240,4 +240,25 @@ export const generateDocument = async (req, res) => {
   }
 };
 
+export const generateQuotationDocument = async (req, res) => {
+  let url =
+    "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbx1CDGYPQ80Ld4GzQhXmd-D85p7HWnezIGngyCzZZdvFPNDisCbg1CFrUUv0PH_EEzd/exec";
+
+  try {
+    let response = await axios.get(url, {
+      params: {
+        company_id: req.query.company_id,
+        document_id: req.query.document_id,
+      },
+    });
+
+    if (response.status === 200) {
+      res.send(response.data);
+    }
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
 //#endregion
