@@ -17,6 +17,7 @@ import individuals_route from "./routes/individuals_route.js";
 import main_dashboard_route from "./routes/main_dashboard_route.js";
 import mc28form_route from "./routes/mc28form_route.js";
 import document_drafting_route from "./routes/document_drafting_route.js";
+import quotation_route from "./routes/quotation_route.js";
 
 import db from "./database/db.js";
 import cors from "cors";
@@ -48,8 +49,8 @@ app.use(
     origin: [
       process.env.LOCALHOST_CLIENT_URL,
       process.env.CLIENT_URL,
-      "https://script.google.com",
-      "https://app.viascari.com",
+      process.env.APP_SCRIPT_URL,
+      process.env.NEW_CLIENT_URL,
     ],
     credentials: true,
   })
@@ -72,6 +73,7 @@ app.use(main_dashboard_route);
 app.use(mc28form_route);
 app.use(document_drafting_route);
 app.use(business_renewal_routes);
+app.use(quotation_route);
 
 app.get("/", (req, res) => {
   db("users")
