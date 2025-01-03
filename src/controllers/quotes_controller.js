@@ -214,7 +214,8 @@ const getQuoteNumber = async (company = "Viascari, Inc.") => {
     if (quotes.length > 0) {
       let VGCQuotes = quotes.filter(
         (quote) =>
-          quote.form_data.company == "Offshore Concept BPO Services, Inc."
+          quote.form_data.billing_account ==
+          "Offshore Concept BPO Services, Inc."
       );
 
       if (VGCQuotes.length > 0) {
@@ -228,7 +229,7 @@ const getQuoteNumber = async (company = "Viascari, Inc.") => {
   } else {
     if (quotes.length > 0) {
       let VIAQuotes = quotes.filter(
-        (quote) => quote.form_data.company == "Viascari, Inc."
+        (quote) => quote.form_data.billing_account == "Viascari, Inc."
       );
 
       if (VIAQuotes.length > 0) {
