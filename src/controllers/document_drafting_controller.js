@@ -86,7 +86,7 @@ class DocumentDraftingClass {
   async update() {
     // Exclude the `created_at`,`updated_at` from the update data
     const { created_at, updated_at, ...dataToUpdate } = this;
-    const fieldsToUpdate = MC28FormClass.getUpdateFields(dataToUpdate);
+    const fieldsToUpdate = DocumentDraftingClass.getUpdateFields(dataToUpdate);
     if (Object.keys(fieldsToUpdate).length > 0) {
       return await db(TABLE_NAME)
         .where({ document_id: this.document_id })
