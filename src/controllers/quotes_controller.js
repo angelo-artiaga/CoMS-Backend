@@ -10,6 +10,12 @@ const QuoteState = {
   type: "Business Permit Renewal Quotation",
 };
 
+const QuoteAttachmentsState = {
+  signed_document_url: "",
+  invoice_url: "",
+  proof_of_payment_url: "",
+};
+
 //#endregion
 
 //#region CLASS
@@ -21,6 +27,7 @@ class Quote {
     form_data = QuoteState,
     folder_id = "",
     google_doc_id = "",
+    attachments = QuoteAttachmentsState,
     created_at = "",
     updated_at = "",
   } = {}) {
@@ -30,6 +37,7 @@ class Quote {
     this.form_data = form_data;
     this.folder_id = folder_id;
     this.google_doc_id = google_doc_id;
+    this.attachments = attachments;
     this.created_at = created_at;
     this.updated_at = updated_at;
   }
@@ -303,6 +311,15 @@ export const updateQuote = async (req, res) => {
     return;
   }
 
+  let attachments = QuoteAttachmentsState;
+
+  if (
+    req.body.attachments != undefined &&
+    Object.keys(req.body.attachments).length != 0
+  ) {
+    attachments = req.body.attachments;
+  }
+
   try {
     const existingRecord = await Quote.fetch(quote_id);
 
@@ -310,6 +327,7 @@ export const updateQuote = async (req, res) => {
       const updatedRecord = new Quote({
         ...existingRecord,
         ...data,
+        attachments,
         quote_id: quote_id,
       });
 
