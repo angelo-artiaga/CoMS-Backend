@@ -402,12 +402,6 @@ const getLatestGIS = async (req, res) => {
 };
 
 const generateGIS = async (req, res) => {
-  let url_old =
-    "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbxZ1mYYAucZD_8U7ydWgMJz69tZR9mMD_xRy0fDuLhTofSBDTwnYszHOPOqbedpDfrP/exec";
-
-  let url_old_1 =
-    "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbzzuuNKPjS_V9MLCC0znutLLRybngsE6PbszREl5PYxeFD6CJ2LFGNobVWRWrZOUS2T/exec";
-
   let url =
     "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbwqWncGPkcHl8kFalRxK2syj8zH-MSKB5RrFCiIdwW1R67qqtbmU9l5MGfAV5sc8Y27ZQ/exec";
 
@@ -426,6 +420,29 @@ const generateGIS = async (req, res) => {
   }
 };
 
+const updateGIS = async (req, res) => {
+  const recordId = req.params.recordId;
+  const { google_sheets } = req.body;
+
+  let attachments = {
+    google_sheets: google_sheets,
+  };
+
+  try {
+    const update = await db("records")
+      .where("recordId", recordId)
+      .update({ attachments });
+
+    if (update) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(500);
+    }
+  } catch (error) {
+    res.sendStatus(500);
+  }
+};
+
 export {
   getAllRecords,
   getAllCompanyRecords,
@@ -436,4 +453,5 @@ export {
   deleteRecord,
   getLatestGIS,
   generateGIS,
+  updateGIS,
 };
