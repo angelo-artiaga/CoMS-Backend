@@ -11,6 +11,7 @@ import {
   getCurrentDirectors,
   getLatestGIS,
   generateGIS,
+  updateGIS,
 } from "../controllers/recordControllers.js";
 
 router.route("/record").get(getAllRecords).post(createRecord);
@@ -23,6 +24,6 @@ router
   .patch(updateRecord)
   .delete(deleteRecord);
 
-router.route("/record/generate/:recordId").get(generateGIS);
+router.route("/record/generate/:recordId").get(generateGIS).post(updateGIS);
 
 export default router;
