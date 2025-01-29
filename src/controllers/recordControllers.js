@@ -402,6 +402,22 @@ const getLatestGIS = async (req, res) => {
 };
 
 const generateGIS = async (req, res) => {
+  const recordId = req.params.recordId;
+  const record = { ...req.body };
+
+  //Update Existing GIS
+  if (record.attachments.google_sheets != "") {
+    let toUpdate = {
+      draftingInput: JSON.stringify(record.draftingInput),
+    };
+    try {
+      await db("records").where("recordId", recordId).update(toUpdate);
+    } catch (error) {
+      res.status(500).json("Failed to update the record.");
+      return;
+    }
+  }
+
   let url =
     "https://script.google.com/a/macros/fullsuite.ph/s/AKfycbwqWncGPkcHl8kFalRxK2syj8zH-MSKB5RrFCiIdwW1R67qqtbmU9l5MGfAV5sc8Y27ZQ/exec";
 
