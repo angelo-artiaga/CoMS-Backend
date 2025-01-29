@@ -424,7 +424,7 @@ const generateGIS = async (req, res) => {
   try {
     let response = await axios.get(url, {
       params: {
-        recordId: req.query.recordId,
+        recordId: recordId,
       },
     });
 
