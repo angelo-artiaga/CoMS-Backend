@@ -24,6 +24,7 @@ router
   .patch(updateRecord)
   .delete(deleteRecord);
 
-router.route("/record/generate/:recordId").get(generateGIS).post(updateGIS);
+router.route("/record/generate/:recordId").post(generateGIS);
+router.route("/record/generate-update/:recordId").post(updateGIS);
 
 export default router;
